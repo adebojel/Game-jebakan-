@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Teka-Teki Jebakan</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f3f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 400px;
+            height: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .level-title { font-size: 18px; font-weight: bold; color: #333; }
+        .btn-hint {
+            background-color: #ff9f43;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .question-box {
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            min-height: 80px;
+        }
+        .interactable-text {
+            color: #ee5253;
+            cursor: grab;
+            display: inline-block;
+        }
+        .play-area {
+            flex: 1;
+            position: relative;
+            background-color: #fdfdfd;
+            margin: 10px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .draggable {
+            position: absolute;
+            cursor: grab;
+            touch-action: none;
+        }
+        #ad-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .ad-timer { font-size: 48px; color: #ff9f43; margin: 20px 0; font-weight: bold; }
+        .hint-result { display: none; background: #2ed573; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        #victory-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(46, 213, 115, 0.95);
+            color: white;
+            z-index: 90;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-next {
+            background: white; color: #2ed573; border: none;
+            padding: 12px 30px; border-radius: 20px; font-weight: bold;
+            font-size: 18px; margin-top: 20px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <div class="level-title" id="level-num">Level 1</div>
+        <button class="btn-hint" onclick="showAd()">💡 Petunjuk (Iklan 10s)</button>
+    </div>
+
+    <div class="question-box" id="question">Loading...</div>
+
+    <div class="play-area" id="play-area"></div>
+
+    <div id="ad-modal">
+        <h3>Sponsor: Iklan Pendek</h3>
+        <p>Petunjuk akan terbuka setelah iklan selesai</p>
+        <div class="ad-timer" id="ad-timer">10</div>
+        <div class="hint-result" id="hint-text"></div>
+        <button id="close-ad-btn" style="display:none; margin-top:15px; padding:10px 20px;" onclick="closeAd()">Tutup</button>
+    </div>
+
+    <div id="victory-modal">
+        <h1>BERHASIL! 🎉</h1>
+        <p>Logika kamu luar biasa!</p>
+        <button class="btn-next" onclick="nextLevel()">Level Berikutnya ➡️</button>
+    </div>
+</div>
+
+<script>
+    let currentLevel = 0;
+    let hintTextData = "";
+
+    const levels = [
+        {
+            num: 1,
+            question: 'Buat <span id="drag-api" class="interactable-text">api</span> unggun ini menyala!',
+            hint: 'Geser kata "api" yang ada pada teks judul di atas langsung ke kayu.',
+            setup: function(container) {
+                container.innerHTML = `<div id="kayu" style="position:absolute; bottom:30px; left:130px; font-size:60px;">🪵</div>`;
+                makeDraggable(document.getElementById('drag-api'), (x, y) => {
+                    let kayu = document.getElementById('kayu').getBoundingClientRect();
+                    if (x > kayu.left && x < kayu.right && y > kayu.top && y < kayu.bottom) {
+                        document.getElementById('kayu').innerHTML = "🔥";
+                        setTimeout(winLevel, 500);
+                    }
+                });
+            }
+        },
+        {
+            num: 2,
+            question: 'Bantu Gajah melompati pagar!',
+            hint: 'Gajah tidak bisa melompat. Tarik pagar tersebut ke bawah hingga hilang dari layar.',
+            setup: function(container) {
+                container.innerHTML = `
+                    <div id="gajah" onclick="gajahGagal()" style="position:absolute; bottom:20px; left:20px; font-size:60px; cursor:pointer;">🐘</div>
+                    <div id="pagar" class="draggable" style="position:absolute; bottom:0px; left:160px; font-size:50px;">🪵🧱</div>
+                `;
+                makeDraggable(document.getElementById('pagar'), (x, y) => {
+                    let pagar = document.getElementById('pagar');
+                    if (parseInt(pagar.style.top) > 250) {
+                        pagar.style.display = 'none';
+                    }
+                });
+            }
+        },
+        {
+            num: 3,
+            question: 'Buka pintu rahasia ini!',
+            hint: 'Ketuk kunci kecil beberapa kali hingga ukurannya membesar, lalu geser ke pintu.',
+            setup: function(container) {
+                container.innerHTML = `
+                    <div id="pintu" style="position:absolute; top:80px; left:140px; font-size:80px;">🚪</div>
+                    <div id="kunci" class="draggable" style="position:absolute; top:280px; left:40px; font-size:25px; transition: transform 0.2s;">🔑</div>
+                `;
+                let size = 25;
+                let kunci = document.getElementById('kunci');
+                kunci.addEventListener('click', () => {
+                    size += 15;
+                    kunci.style.fontSize = size + 'px';
+                });
+                makeDraggable(kunci, (x, y) => {
+                    let pintu = document.getElementById('pintu').getBoundingClientRect();
+                    if (x > pintu.left && x < pintu.right && y > pintu.top && y < pintu.bottom && size >= 55) {
+                        document.getElementById('pintu').innerHTML = "🚪✨ (TERBUKA)";
+                        setTimeout(winLevel, 500);
+                    }
+                });
+            }
+        },
+        {
+            num: 4,
+            question: 'Cari tombol <span id="drag-lanjut" class="interactable-text">LANJUT</span> untuk menyelesaikan game!',
+            hint: 'Tarik kata "LANJUT" di dalam soal ke dalam kotak permainan.',
+            setup: function(container) {
+                container.innerHTML = `
+                    <button style="position:absolute; top:100px; left:50px; padding:10px 20px;">ULANG</button>
+                    <button style="position:absolute; top:100px; left:200px; padding:10px 20px;">KELUAR</button>
+                    <div id="drop-zone" style="position:absolute; bottom:50px; left:50px; right:50px; height:100px; border:2px dashed #ccc; display:flex; justify-content:center; align-items:center; color:#aaa;">Taruh tombol di sini</div>
+                `;
+                makeDraggable(document.getElementById('drag-lanjut'), (x, y) => {
+                    let zone = document.getElementById('drop-zone').getBoundingClientRect();
+                    if (x > zone.left && x < zone.right && y > zone.top && y < zone.bottom) {
+                        winLevel();
+                    }
+                });
+            }
+        },
+        {
+            num: 5,
+            question: 'Mana benda yang TIDAK BISA dimakan?',
+            hint: 'Geser semua makanan keluar dari piring, lalu ketuk piring yang kosong.',
+            setup: function(container) {
+                container.innerHTML = `
+                    <div id="piring" onclick="clickPiring()" style="position:absolute; top:120px; left:120px; font-size:100px; cursor:pointer;">🍽️</div>
+                    <div id="f1" class="draggable" style="position:absolute; top:150px; left:140px; font-size:40px;">🍕</div>
+                    <div id="f2" class="draggable" style="position:absolute; top:150px; left:190px; font-size:40px;">🍗</div>
+                `;
+                makeDraggable(document.getElementById('f1'));
+                makeDraggable(document.getElementById('f2'));
+            }
+        }
+    ];
+
+    function loadLevel() {
+        let lvl = levels[currentLevel];
+        document.getElementById('level-num').innerText = "Level " + lvl.num;
+        document.getElementById('question').innerHTML = lvl.question;
+        hintTextData = lvl.hint;
+        let playArea = document.getElementById('play-area');
+        playArea.innerHTML = "";
+        document.getElementById('victory-modal').style.display = 'none';
+        lvl.setup(playArea);
+    }
+
+    function winLevel() {
+        document.getElementById('victory-modal').style.display = 'flex';
+    }
+
+    function nextLevel() {
+        currentLevel++;
+        if (currentLevel < levels.length) {
+            loadLevel();
+        } else {
+            alert("Selamat! Kamu telah menyelesaikan semua level prototipe!");
+            currentLevel = 0;
+            loadLevel();
+        }
+    }
+
+    function gajahGagal() {
+        if(document.getElementById('pagar').style.display !== 'none') {
+            alert("Gajah menabrak pagar! Hilangkan pagarnya dulu.");
+        } else {
+            winLevel();
+        }
+    }
+
+    function clickPiring() {
+        let f1 = document.getElementById('f1').getBoundingClientRect();
+        let f2 = document.getElementById('f2').getBoundingClientRect();
+        let piring = document.getElementById('piring').getBoundingClientRect();
+
+        let f1OnPiring = !(f1.right < piring.left || f1.left > piring.right || f1.bottom < piring.top || f1.top > piring.bottom);
+        let f2OnPiring = !(f2.right < piring.left || f2.left > piring.right || f2.bottom < piring.top || f2.top > piring.bottom);
+
+        if(!f1OnPiring && !f2OnPiring) {
+            winLevel();
+        } else {
+            alert("Pindahkan dulu makanan dari atas piring!");
+        }
+    }
+
+    function makeDraggable(elmnt, onDropCallback) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        elmnt.onmousedown = dragMouseDown;
+        elmnt.ontouchstart = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            let clientX = e.clientX || e.touches[0].clientX;
+            let clientY = e.clientY || e.touches[0].clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            document.onmouseup = closeDragElement;
+            document.ontouchend = closeDragElement;
+            document.onmousemove = elementDrag;
+            document.ontouchmove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            let clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            let clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+            if (onDropCallback) {
+                onDropCallback(pos3, pos4);
+            }
+        }
+    }
+
+    function showAd() {
+        let modal = document.getElementById('ad-modal');
+        let timerDisplay = document.getElementById('ad-timer');
+        let hintDisplay = document.getElementById('hint-text');
+        let closeBtn = document.getElementById('close-ad-btn');
+        
+        modal.style.display = 'flex';
+        hintDisplay.style.display = 'none';
+        closeBtn.style.display = 'none';
+        let timeLeft = 10;
+        timerDisplay.innerText = timeLeft;
+
+        let countdown = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerDisplay.innerText = "Selesai!";
+                hintDisplay.innerText = hintTextData;
+                hintDisplay.style.display = 'block';
+                closeBtn.style.display = 'block';
+            }
+        }, 1000);
+    }
+
+    function closeAd() {
+        document.getElementById('ad-modal').style.display = 'none';
+    }
+
+    loadLevel();
+</script>
+
+</body>
+</html>
