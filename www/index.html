@@ -2,13 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Game Teka-Teki Jebakan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brain Test x Brain Out 500 Level Edition</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f3f8;
+            font-family: 'Comic Sans MS', 'Segoe UI', Roboto, sans-serif;
+            background-color: #dff9fb;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,57 +16,107 @@
         }
         #game-container {
             width: 100%;
-            max-width: 400px;
-            height: 650px;
+            max-width: 420px;
+            height: 710px;
             background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            border: 5px solid #ff6b6b;
         }
-        .header {
-            padding: 15px 20px;
+        
+        /* Top Navigation Bar */
+        .top-bar {
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .level-title { font-size: 18px; font-weight: bold; color: #333; }
-        .btn-hint {
-            background-color: #ff9f43;
+            background: #ff6b6b;
             color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .question-box {
-            padding: 20px;
+        .coins-badge {
+            background: rgba(0,0,0,0.25);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .level-title-box {
             text-align: center;
-            font-size: 20px;
-            font-weight: 600;
-            color: #2c3e50;
-            min-height: 80px;
+        }
+        .level-badge {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+        .series-tag {
+            font-size: 10px;
+            background: #ffd166;
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 2px;
+            display: inline-block;
+        }
+        .top-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .icon-btn {
+            background: #4ecdc4;
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Question & Play Area */
+        .question-box {
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3436;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.35;
+            background: #f8f9fa;
+            border-bottom: 2px dashed #e9ecef;
         }
         .interactable-text {
-            color: #ee5253;
+            color: #e63946;
             cursor: grab;
             display: inline-block;
             position: relative;
             z-index: 10;
-            font-weight: bold;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: rgba(230, 57, 70, 0.12);
         }
         .play-area {
             flex: 1;
             position: relative;
-            background-color: #fdfdfd;
-            margin: 10px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 15px;
+            background-color: #fdfbf7;
+            margin: 10px 12px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 20px;
             overflow: hidden;
         }
         .draggable {
@@ -75,12 +125,36 @@
             touch-action: none;
             z-index: 10;
         }
-        #ad-modal {
+
+        /* Bottom Controls */
+        .bottom-bar {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-around;
+            background: #ffffff;
+            border-top: 2px solid #f0f0f0;
+        }
+        .btn-bottom {
+            background: #118ab2;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(17, 138, 178, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-skip { background: #ffd166; color: #333; box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4); }
+
+        /* Modals */
+        .modal-overlay {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
             z-index: 100;
             flex-direction: column;
             justify-content: center;
@@ -88,284 +162,329 @@
             text-align: center;
             padding: 20px;
         }
-        .ad-timer { font-size: 48px; color: #ff9f43; margin: 20px 0; font-weight: bold; }
-        .hint-result { display: none; background: #2ed573; padding: 15px; border-radius: 10px; margin-top: 15px; }
-        #victory-modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(46, 213, 115, 0.95);
-            color: white;
-            z-index: 90;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        #victory-modal { background: rgba(6, 214, 160, 0.96); color: white; }
+        #level-select-modal { background: rgba(255, 255, 255, 0.98); color: #333; justify-content: flex-start; }
+        #hint-modal { background: rgba(0, 0, 0, 0.92); color: white; }
+
+        .btn-modal {
+            background: white; border: none;
+            padding: 12px 28px; border-radius: 20px; font-weight: bold;
+            font-size: 16px; margin-top: 20px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #06d6a0;
         }
-        .btn-next {
-            background: white; color: #2ed573; border: none;
-            padding: 12px 30px; border-radius: 20px; font-weight: bold;
-            font-size: 18px; margin-top: 20px; cursor: pointer;
+
+        /* Pagination tabs for 500 levels */
+        .page-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            width: 100%;
+            padding: 10px 0;
+            margin-top: 10px;
         }
+        .tab-btn {
+            background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 10px;
+            font-size: 12px; font-weight: bold; white-space: nowrap; cursor: pointer;
+        }
+        .tab-btn.active { background: #ff6b6b; color: white; }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .level-item {
+            background: #f0f3f8;
+            padding: 10px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            color: #888;
+        }
+        .level-item.unlocked { background: #ff6b6b; color: white; border-color: #ee5253; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div class="header">
-        <div class="level-title" id="level-num">Level 1</div>
-        <button class="btn-hint" onclick="showAd()">💡 Petunjuk (Iklan 10s)</button>
+    <!-- Top Header -->
+    <div class="top-bar">
+        <div class="coins-badge">🪙 <span id="coins-display">60</span></div>
+        <div class="level-title-box">
+            <div class="level-badge" id="level-num">LEVEL 1</div>
+            <div class="series-tag" id="series-tag">BRAIN OUT 1</div>
+        </div>
+        <div class="top-actions">
+            <button class="icon-btn" onclick="toggleSound()" id="sound-btn">🔊</button>
+            <button class="icon-btn" onclick="openLevelSelect()">📱</button>
+            <button class="icon-btn" onclick="restartLevel()">🔄</button>
+        </div>
     </div>
 
-    <div class="question-box" id="question">Loading...</div>
+    <!-- Question Box -->
+    <div class="question-box" id="question">Memuat teka-teki...</div>
 
+    <!-- Play Area -->
     <div class="play-area" id="play-area"></div>
 
-    <div id="ad-modal">
-        <h3>Sponsor: Iklan Pendek</h3>
-        <p>Petunjuk akan terbuka setelah iklan selesai</p>
-        <div class="ad-timer" id="ad-timer">10</div>
-        <div class="hint-result" id="hint-text"></div>
-        <button id="close-ad-btn" style="display:none; margin-top:15px; padding:10px 20px;" onclick="closeAd()">Tutup</button>
+    <!-- Bottom Controls -->
+    <div class="bottom-bar">
+        <button class="btn-bottom" onclick="useHint()">💡 Petunjuk (20 🪙)</button>
+        <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭️ Lewati (30 🪙)</button>
     </div>
 
-    <div id="victory-modal">
-        <h1>BERHASIL! 🎉</h1>
-        <p>Logika kamu luar biasa!</p>
-        <button class="btn-next" onclick="nextLevel()">Level Berikutnya ➡️</button>
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal-overlay">
+        <h1 style="font-size:36px;">HEBAT BANGET! 🎉</h1>
+        <p style="margin-top:10px; font-size:18px;" id="victory-desc">Logika kamu setingkat Genius!</p>
+        <p style="margin-top:5px; font-weight:bold; font-size:20px;">+20 Koin 🪙</p>
+        <button class="btn-modal" onclick="nextLevel()">Level Berikutnya ➡️</button>
+    </div>
+
+    <!-- Hint Modal -->
+    <div id="hint-modal" class="modal-overlay">
+        <h2 style="color:#ffd166;">💡 PETUNJUK RAHAISIA</h2>
+        <p id="hint-text-content" style="margin-top:15px; font-size:18px; line-height:1.4;"></p>
+        <button class="btn-modal" style="color:#333;" onclick="closeModal('hint-modal')">Saya Paham!</button>
+    </div>
+
+    <!-- Level Select Modal -->
+    <div id="level-select-modal" class="modal-overlay">
+        <h2 style="margin-top:10px;">Pilih Level (Total 500)</h2>
+        <div class="page-tabs" id="page-tabs"></div>
+        <div class="level-grid" id="level-grid"></div>
+        <button class="btn-modal" style="color:#333; background:#ddd;" onclick="closeModal('level-select-modal')">Tutup</button>
     </div>
 </div>
 
 <script>
+    const TOTAL_LEVELS = 500;
     let currentLevel = 0;
-    let hintTextData = "";
+    let unlockedLevels = 0;
+    let coins = 60;
+    let soundEnabled = true;
+    let activePage = 0;
+
+    // Web Audio Synthesizer
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        const now = audioCtx.currentTime;
+        if (type === 'win') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.1);
+            osc.frequency.setValueAtTime(783.99, now + 0.2);
+            osc.frequency.setValueAtTime(1046.50, now + 0.3);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+            osc.start(now); osc.stop(now + 0.6);
+        } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.setValueAtTime(120, now + 0.15);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now); osc.stop(now + 0.4);
+        } else if (type === 'pop') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(450, now);
+            osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now); osc.stop(now + 0.08);
+        } else if (type === 'combine') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.setValueAtTime(600, now + 0.1);
+            osc.frequency.setValueAtTime(900, now + 0.2);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now); osc.stop(now + 0.4);
+        }
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('sound-btn').innerText = soundEnabled ? '🔊' : '🔇';
+    }
+
+    function initGame() {
+        let savedLvl = localStorage.getItem('bt500_level');
+        let savedUnlocked = localStorage.getItem('bt500_unlocked');
+        let savedCoins = localStorage.getItem('bt500_coins');
+
+        if (savedLvl !== null) currentLevel = parseInt(savedLvl, 10);
+        if (savedUnlocked !== null) unlockedLevels = parseInt(savedUnlocked, 10);
+        if (savedCoins !== null) coins = parseInt(savedCoins, 10);
+
+        updateUI();
+        loadLevel();
+    }
+
+    function saveData() {
+        localStorage.setItem('bt500_level', currentLevel);
+        localStorage.setItem('bt500_unlocked', unlockedLevels);
+        localStorage.setItem('bt500_coins', coins);
+    }
+
+    function updateUI() {
+        document.getElementById('coins-display').innerText = coins;
+    }
 
     function isOverlapping(rect1, rect2) {
-        return !(rect1.right < rect2.left || 
-                 rect1.left > rect2.right || 
-                 rect1.bottom < rect2.top || 
-                 rect1.top > rect2.bottom);
+        return !(rect1.right < rect2.left || rect1.left > rect2.right || 
+                 rect1.bottom < rect2.top || rect1.top > rect2.bottom);
     }
 
-    const levels = [
-        {
-            num: 1,
-            question: 'Buat <span id="drag-api" class="interactable-text">api</span> unggun ini menyala!',
-            hint: 'Geser kata "api" yang ada pada teks judul di atas langsung ke kayu.',
-            setup: function(container) {
-                container.innerHTML = `<div id="kayu" style="position:absolute; bottom:30px; left:130px; font-size:60px;">🪵</div>`;
-                let apiEl = document.getElementById('drag-api');
-                makeDraggable(apiEl, () => {
-                    let kayuRect = document.getElementById('kayu').getBoundingClientRect();
-                    let apiRect = apiEl.getBoundingClientRect();
-                    if (isOverlapping(apiRect, kayuRect)) {
-                        document.getElementById('kayu').innerHTML = "🔥";
-                        setTimeout(winLevel, 500);
-                    }
-                });
-            }
-        },
-        {
-            num: 2,
-            question: 'Bantu Gajah melompati pagar!',
-            hint: 'Gajah tidak bisa melompat. Tarik pagar tersebut ke bawah hingga hilang dari layar.',
-            setup: function(container) {
-                container.innerHTML = `
-                    <div id="gajah" onclick="gajahGagal()" style="position:absolute; bottom:20px; left:20px; font-size:60px; cursor:pointer;">🐘</div>
-                    <div id="pagar" class="draggable" style="position:absolute; bottom:0px; left:160px; font-size:50px;">🪵🧱</div>
-                `;
-                let pagar = document.getElementById('pagar');
-                makeDraggable(pagar, () => {
-                    let topVal = parseInt(pagar.style.top) || 0;
-                    if (topVal > 150) {
-                        pagar.style.display = 'none';
-                    }
-                });
-            }
-        },
-        {
-            num: 3,
-            question: 'Buka pintu rahasia ini!',
-            hint: 'Ketuk kunci kecil beberapa kali hingga ukurannya membesar, lalu geser ke pintu.',
-            setup: function(container) {
-                container.innerHTML = `
-                    <div id="pintu" style="position:absolute; top:80px; left:140px; font-size:80px;">🚪</div>
-                    <div id="kunci" class="draggable" style="position:absolute; top:200px; left:40px; font-size:25px; transition: transform 0.2s;">🔑</div>
-                `;
-                let size = 25;
-                let kunci = document.getElementById('kunci');
-                kunci.addEventListener('click', () => {
-                    size += 15;
-                    kunci.style.fontSize = size + 'px';
-                });
-                makeDraggable(kunci, () => {
-                    let pintuRect = document.getElementById('pintu').getBoundingClientRect();
-                    let kunciRect = kunci.getBoundingClientRect();
-                    if (isOverlapping(kunciRect, pintuRect) && size >= 55) {
-                        document.getElementById('pintu').innerHTML = "🚪✨";
-                        setTimeout(winLevel, 500);
-                    }
-                });
-            }
-        },
-        {
-            num: 4,
-            question: 'Cari tombol <span id="drag-lanjut" class="interactable-text">LANJUT</span> untuk menyelesaikan game!',
-            hint: 'Tarik kata "LANJUT" di dalam soal ke dalam kotak permainan.',
-            setup: function(container) {
-                container.innerHTML = `
-                    <button style="position:absolute; top:80px; left:40px; padding:10px 20px;">ULANG</button>
-                    <button style="position:absolute; top:80px; left:200px; padding:10px 20px;">KELUAR</button>
-                    <div id="drop-zone" style="position:absolute; bottom:50px; left:40px; right:40px; height:100px; border:2px dashed #ccc; display:flex; justify-content:center; align-items:center; color:#aaa;">Taruh tombol di sini</div>
-                `;
-                let lanjutEl = document.getElementById('drag-lanjut');
-                makeDraggable(lanjutEl, () => {
-                    let zoneRect = document.getElementById('drop-zone').getBoundingClientRect();
-                    let lanjutRect = lanjutEl.getBoundingClientRect();
-                    if (isOverlapping(lanjutRect, zoneRect)) {
-                        winLevel();
-                    }
-                });
-            }
-        },
-        {
-            num: 5,
-            question: 'Mana benda yang TIDAK BISA dimakan?',
-            hint: 'Geser semua makanan keluar dari piring, lalu ketuk piring yang kosong.',
-            setup: function(container) {
-                container.innerHTML = `
-                    <div id="piring" onclick="clickPiring()" style="position:absolute; top:120px; left:120px; font-size:100px; cursor:pointer;">🍽️</div>
-                    <div id="f1" class="draggable" style="position:absolute; top:150px; left:140px; font-size:40px;">🍕</div>
-                    <div id="f2" class="draggable" style="position:absolute; top:150px; left:190px; font-size:40px;">🍗</div>
-                `;
-                makeDraggable(document.getElementById('f1'));
-                makeDraggable(document.getElementById('f2'));
-            }
-        }
+    // --- SERIES LABEL GENERATOR ---
+    const seriesList = [
+        'BRAIN OUT 1', 'BRAIN TEST 1', 'BRAIN OUT 2', 
+        'BRAIN TEST 2: AGEN SMITH', 'BRAIN OUT 3', 
+        'BRAIN TEST 3: LILY & ASTI', 'BRAIN TEST 4: PAMAN BOB', 
+        'BRAIN TEST 5: NENEK ANI'
     ];
 
-    function loadLevel() {
-        let lvl = levels[currentLevel];
-        document.getElementById('level-num').innerText = "Level " + lvl.num;
-        document.getElementById('question').innerHTML = lvl.question;
-        hintTextData = lvl.hint;
-        let playArea = document.getElementById('play-area');
-        playArea.innerHTML = "";
-        document.getElementById('victory-modal').style.display = 'none';
-        lvl.setup(playArea);
-    }
+    // --- 500 LEVEL GENERATOR FACTORY ---
+    function getLevelData(lvlIndex) {
+        let num = lvlIndex + 1;
+        let seriesName = seriesList[lvlIndex % seriesList.length];
 
-    function winLevel() {
-        document.getElementById('victory-modal').style.display = 'flex';
-    }
-
-    function nextLevel() {
-        currentLevel++;
-        if (currentLevel < levels.length) {
-            loadLevel();
-        } else {
-            alert("Selamat! Kamu telah menyelesaikan semua level prototipe!");
-            currentLevel = 0;
-            loadLevel();
+        // Handcrafted early levels (1 - 10)
+        if (lvlIndex === 0) {
+            return {
+                num: 1, series: 'BRAIN OUT 1',
+                question: 'Berapa sebetulnya jumlah rambut orang ini?',
+                hint: 'Lepas wig/rambut palsunya dengan menggesernya ke atas!',
+                setup: function(c) {
+                    c.innerHTML = `
+                        <div style="text-align:center; padding-top:40px;">
+                            <div style="font-size:100px;">👨‍🦲</div>
+                            <div id="wig" class="draggable" style="font-size:100px; position:absolute; top:40px; left:50%; transform:translateX(-50%);">👨‍🦱</div>
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:15px; margin-top:80px;">
+                            <button onclick="wrongAnswer()" style="padding:10px 20px; font-size:18px; border-radius:10px;">1000</button>
+                            <button onclick="winLevel('Keren! Tanpa wig jumlah rambutnya 0!')" style="padding:10px 20px; font-size:18px; border-radius:10px;">0</button>
+                        </div>
+                    `;
+                    makeDraggable(document.getElementById('wig'));
+                }
+            };
         }
-    }
-
-    function gajahGagal() {
-        if(document.getElementById('pagar').style.display !== 'none') {
-            alert("Gajah menabrak pagar! Hilangkan pagarnya dulu.");
-        } else {
-            winLevel();
+        if (lvlIndex === 1) {
+            return {
+                num: 2, series: 'BRAIN TEST 2: AGEN SMITH',
+                question: 'Agen Smith harus menangkap Pencuri yang kabur!',
+                hint: 'Ketuk kaki pencuri secara berulang-ulang sampai tersandung!',
+                setup: function(c) {
+                    c.innerHTML = `
+                        <div style="position:absolute; bottom:40px; left:20px; font-size:75px;">🕵️‍♂️</div>
+                        <div id="thief" onclick="clickThief()" style="position:absolute; bottom:40px; right:30px; font-size:75px; cursor:pointer;">🥷</div>
+                    `;
+                    let clicks = 0;
+                    window.clickThief = function() {
+                        clicks++; playSound('pop');
+                        if (clicks >= 3) {
+                            document.getElementById('thief').innerHTML = "😵💫";
+                            setTimeout(() => winLevel('Pencuri berhasil ditangkap Agen Smith!'), 400);
+                        }
+                    };
+                }
+            };
         }
-    }
-
-    function clickPiring() {
-        let f1 = document.getElementById('f1').getBoundingClientRect();
-        let f2 = document.getElementById('f2').getBoundingClientRect();
-        let piring = document.getElementById('piring').getBoundingClientRect();
-
-        let f1OnPiring = isOverlapping(f1, piring);
-        let f2OnPiring = isOverlapping(f2, piring);
-
-        if(!f1OnPiring && !f2OnPiring) {
-            winLevel();
-        } else {
-            alert("Pindahkan dulu makanan dari atas piring!");
-        }
-    }
-
-    function makeDraggable(elmnt, onDropCallback) {
-        let startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
-
-        elmnt.addEventListener('touchstart', dragStart, { passive: false });
-        elmnt.addEventListener('mousedown', dragStart);
-
-        function dragStart(e) {
-            e.preventDefault();
-            let touch = e.touches ? e.touches[0] : e;
-            startX = touch.clientX;
-            startY = touch.clientY;
-            
-            initialLeft = parseInt(elmnt.style.left) || 0;
-            initialTop = parseInt(elmnt.style.top) || 0;
-
-            document.addEventListener('touchmove', dragMove, { passive: false });
-            document.addEventListener('mousemove', dragMove);
-            document.addEventListener('touchend', dragEnd);
-            document.addEventListener('mouseup', dragEnd);
-        }
-
-        function dragMove(e) {
-            e.preventDefault();
-            let touch = e.touches ? e.touches[0] : e;
-            let dx = touch.clientX - startX;
-            let dy = touch.clientY - startY;
-
-            elmnt.style.left = (initialLeft + dx) + 'px';
-            elmnt.style.top = (initialTop + dy) + 'px';
+        if (lvlIndex === 2) {
+            return {
+                num: 3, series: 'BRAIN TEST 3: LILY & ASTI',
+                question: 'Bantu Lily & Asti menyeberangi sungai!',
+                hint: 'Gabungkan Tali 🧵 dan Kayu 🪵 untuk membuat Tangga Jembatan!',
+                setup: function(c) {
+                    c.innerHTML = `
+                        <div style="position:absolute; bottom:30px; left:15px; font-size:60px;">👩‍‍🦰👧</div>
+                        <div style="position:absolute; top:0; bottom:0; left:120px; width:70px; background:#00cec9; opacity:0.7; display:flex; justify-content:center; align-items:center; color:white; font-size:30px;">🌊</div>
+                        <div id="wood" class="draggable" style="position:absolute; top:30px; left:20px; font-size:50px;">🪵</div>
+                        <div id="rope" class="draggable" style="position:absolute; top:30px; right:30px; font-size:50px;">🧵</div>
+                    `;
+                    let w = document.getElementById('wood'), r = document.getElementById('rope');
+                    makeDraggable(w, check); makeDraggable(r, check);
+                    function check() {
+                        if (isOverlapping(w.getBoundingClientRect(), r.getBoundingClientRect())) {
+                            playSound('combine');
+                            w.style.display = 'none'; r.style.left = '125px'; r.style.top = '220px'; r.innerHTML = "🪜";
+                            setTimeout(() => winLevel('Jembatan selesai! Lily & Asti berhasil menyeberang.'), 500);
+                        }
+                    }
+                }
+            };
         }
 
-        function dragEnd(e) {
-            document.removeEventListener('touchmove', dragMove);
-            document.removeEventListener('mousemove', dragMove);
-            document.removeEventListener('touchend', dragEnd);
-            document.removeEventListener('mouseup', dragEnd);
-
-            if (onDropCallback) {
-                onDropCallback();
-            }
-        }
-    }
-
-    function showAd() {
-        let modal = document.getElementById('ad-modal');
-        let timerDisplay = document.getElementById('ad-timer');
-        let hintDisplay = document.getElementById('hint-text');
-        let closeBtn = document.getElementById('close-ad-btn');
+        // Procedural Generator Engine for Levels 4 to 500
+        let templateType = lvlIndex % 8;
         
-        modal.style.display = 'flex';
-        hintDisplay.style.display = 'none';
-        closeBtn.style.display = 'none';
-        let timeLeft = 10;
-        timerDisplay.innerText = timeLeft;
-
-        let countdown = setInterval(() => {
-            timeLeft--;
-            timerDisplay.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                timerDisplay.innerText = "Selesai!";
-                hintDisplay.innerText = hintTextData;
-                hintDisplay.style.display = 'block';
-                closeBtn.style.display = 'block';
-            }
-        }, 1000);
-    }
-
-    function closeAd() {
-        document.getElementById('ad-modal').style.display = 'none';
-    }
-
-    loadLevel();
-</script>
-
-</body>
-</html>
+        if (templateType === 0) { // Math Match Trick
+            let a = (num % 7) + 2;
+            let b = (num % 5) + 3;
+            let wrongResult = a + b + 3;
+            let correctResult = a + b;
+            return {
+                num: num, series: seriesName,
+                question: `Perbaiki persamaan matematika: ${a} + ${b} = ${wrongResult}`,
+                hint: 'Geser angka hasil ke samping untuk menemukan angka yang benar di belakangnya!',
+                setup: function(c) {
+                    c.innerHTML = `
+                        <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:45px; font-weight:bold; gap:10px;">
+                            <span>${a} + ${b} =</span>
+                            <div id="hidden-ans" onclick="winLevel('Matematika jenius!')" style="position:absolute; right:70px; cursor:pointer; color:#06d6a0;">${correctResult}</div>
+                            <div id="wrong-ans" class="draggable" style="background:#ff7675; color:white; padding:5px 15px; border-radius:12px; cursor:grab; position:absolute; right:70px;">${wrongResult}</div>
+                        </div>
+                    `;
+                    makeDraggable(document.getElementById('wrong-ans'));
+                }
+            };
+        } else if (templateType === 1) { // Feed Character
+            let foodList = ['🍕', '🍔', '🍗', '🍎', '🍩', '🥩'];
+            let charList = ['🐱', '🐶', '🧔‍♂️', '👵', '🦁'];
+            let food = foodList[num % foodList.length];
+            let char = charList[num % charList.length];
+            return {
+                num: num, series: seriesName,
+                question: `Beri makan ${char} dengan ${food}!`,
+                hint: `Seret ${food} mendekati mulut ${char}!`,
+                setup: function(c) {
+                    c.innerHTML = `
+                        <div id="target-char" style="position:absolute; bottom:40px; left:50%; transform:translateX(-50%); font-size:90px;">${char}</div>
+                        <div id="food-item" class="draggable" style="position:absolute; top:40px; left:40px; font-size:60px;">${food}</div>
+                    `;
+                    let f = document.getElementById('food-item'), ch = document.getElementById('target-char');
+                    makeDraggable(f, () => {
+                        if (isOverlapping(f.getBoundingClientRect(), ch.getBoundingClientRect())) {
+                            f.style.display = 'none'; ch.innerHTML = "😋" + char;
+                            setTimeout(() => winLevel(`Kenyang sekali! ${char} senang.`), 500);
+                        }
+                    });
+                }
+            };
+        } else if (templateType === 2) { // Drag Word Trick
+            return {
+                num: num, series: seriesName,
+                question: `Nyalakan <span id="drag-fire" class="interactable-text">API</span> untuk menghangatkan ruangan!`,
+                hint: 'Seret kata "API" dari teks teka-teki ke kayu bakar!',
+                setup: function(c) {
+                    c.innerHTML = `<div id="wood-stack" style="posit
