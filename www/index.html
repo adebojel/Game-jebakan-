@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Test x Brain Out 500 Level Edition</title>
+    <title>Brain Test x Brain Out 500 Level + Sensor Edition</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body {
@@ -210,6 +210,21 @@
             color: #888;
         }
         .level-item.unlocked { background: #ff6b6b; color: white; border-color: #ee5253; }
+        
+        .sensor-btn {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background: rgba(255, 107, 107, 0.15);
+            color: #e63946;
+            border: 1px solid #e63946;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 50;
+        }
     </style>
 </head>
 <body>
@@ -251,7 +266,7 @@
 
     <!-- Hint Modal -->
     <div id="hint-modal" class="modal-overlay">
-        <h2 style="color:#ffd166;">💡 PETUNJUK RAHAISIA</h2>
+        <h2 style="color:#ffd166;">💡 PETUNJUK RAHASIA</h2>
         <p id="hint-text-content" style="margin-top:15px; font-size:18px; line-height:1.4;"></p>
         <button class="btn-modal" style="color:#333;" onclick="closeModal('hint-modal')">Saya Paham!</button>
     </div>
@@ -272,6 +287,11 @@
     let coins = 60;
     let soundEnabled = true;
     let activePage = 0;
+
+    // Sensor Event Callbacks
+    let onShakeCallback = null;
+    let onTiltCallback = null;
+    let onFlipCallback = null;
 
     // Web Audio Synthesizer
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -322,6 +342,63 @@
         }
     }
 
+    // --- SENSOR ENGINE (Accelerometer & Gyroscope) ---
+    let lastX = null, lastY = null, lastZ = null;
+    const SHAKE_THRESHOLD = 18;
+
+    function initSensors() {
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission().then(response => {
+                if (response === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                    window.addEventListener('deviceorientation', handleOrientation);
+                }
+            }).catch(console.error);
+        } else {
+            window.addEventListener('devicemotion', handleMotion);
+            window.addEventListener('deviceorientation', handleOrientation);
+        }
+    }
+
+    function handleMotion(e) {
+        let acc = e.accelerationIncludingGravity;
+        if (!acc) return;
+        if (lastX !== null) {
+            let deltaX = Math.abs(acc.x - lastX);
+            let deltaY = Math.abs(acc.y - lastY);
+            let deltaZ = Math.abs(acc.z - lastZ);
+            if ((deltaX + deltaY + deltaZ) > SHAKE_THRESHOLD) {
+                if (typeof onShakeCallback === 'function') {
+                    onShakeCallback();
+                }
+            }
+        }
+        lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+    }
+
+    function handleOrientation(e) {
+        let beta = e.beta;   // Depan ke belakang (-180 sampai 180)
+        let gamma = e.gamma; // Kiri ke kanan (-90 sampai 90)
+
+        // Deteksi HP dibalik penuh (upside down)
+        if (Math.abs(beta) > 140 || beta < -140) {
+            if (typeof onFlipCallback === 'function') {
+                onFlipCallback();
+            }
+        }
+
+        // Deteksi Miring Kiri/Kanan
+        if (typeof onTiltCallback === 'function') {
+            onTiltCallback(beta, gamma);
+        }
+    }
+
+    function resetSensors() {
+        onShakeCallback = null;
+        onTiltCallback = null;
+        onFlipCallback = null;
+    }
+
     function toggleSound() {
         soundEnabled = !soundEnabled;
         document.getElementById('sound-btn').innerText = soundEnabled ? '🔊' : '🔇';
@@ -336,6 +413,7 @@
         if (savedUnlocked !== null) unlockedLevels = parseInt(savedUnlocked, 10);
         if (savedCoins !== null) coins = parseInt(savedCoins, 10);
 
+        initSensors();
         updateUI();
         loadLevel();
     }
@@ -363,12 +441,12 @@
         'BRAIN TEST 5: NENEK ANI'
     ];
 
-    // --- 500 LEVEL GENERATOR FACTORY ---
+    // --- 500 LEVEL GENERATOR FACTORY + SENSOR MECHANICS ---
     function getLevelData(lvlIndex) {
         let num = lvlIndex + 1;
         let seriesName = seriesList[lvlIndex % seriesList.length];
 
-        // Handcrafted early levels (1 - 10)
+        // Handcrafted early levels (1 - 6)
         if (lvlIndex === 0) {
             return {
                 num: 1, series: 'BRAIN OUT 1',
@@ -391,52 +469,65 @@
         }
         if (lvlIndex === 1) {
             return {
-                num: 2, series: 'BRAIN TEST 2: AGEN SMITH',
-                question: 'Agen Smith harus menangkap Pencuri yang kabur!',
-                hint: 'Ketuk kaki pencuri secara berulang-ulang sampai tersandung!',
+                num: 2, series: 'BRAIN TEST 1',
+                question: 'Jatuhkan Apel 🍎 segar dari pohon ini!',
+                hint: 'Goyangkan (Shake) HP-mu secara nyata!',
                 setup: function(c) {
                     c.innerHTML = `
-                        <div style="position:absolute; bottom:40px; left:20px; font-size:75px;">🕵️‍♂️</div>
-                        <div id="thief" onclick="clickThief()" style="position:absolute; bottom:40px; right:30px; font-size:75px; cursor:pointer;">🥷</div>
+                        <div style="text-align:center; position:relative; height:100%;">
+                            <div style="font-size:120px; margin-top:20px;">🌳</div>
+                            <div id="apple" style="position:absolute; top:60px; left:50%; transform:translateX(-50%); font-size:50px; transition: all 0.5s;">🍎</div>
+                        </div>
                     `;
-                    let clicks = 0;
-                    window.clickThief = function() {
-                        clicks++; playSound('pop');
-                        if (clicks >= 3) {
-                            document.getElementById('thief').innerHTML = "😵💫";
-                            setTimeout(() => winLevel('Pencuri berhasil ditangkap Agen Smith!'), 400);
-                        }
+                    let apple = document.getElementById('apple');
+                    let shaken = false;
+
+                    // Sensor Goyang
+                    onShakeCallback = function() {
+                        if (shaken) return;
+                        shaken = true;
+                        apple.style.top = "260px";
+                        playSound('pop');
+                        setTimeout(() => winLevel('Apel berhasil jatuh karena goyangan HP-mu!'), 600);
                     };
+
+                    // Fallback Click for Desktop Testing
+                    apple.onclick = function() { onShakeCallback(); };
                 }
             };
         }
         if (lvlIndex === 2) {
             return {
-                num: 3, series: 'BRAIN TEST 3: LILY & ASTI',
-                question: 'Bantu Lily & Asti menyeberangi sungai!',
-                hint: 'Gabungkan Tali 🧵 dan Kayu 🪵 untuk membuat Tangga Jembatan!',
+                num: 3, series: 'BRAIN OUT 2',
+                question: 'Keluarkan koin dari dalam Celengan Babi 🪙!',
+                hint: 'Putar HP-mu terbalik (Upside Down)!',
                 setup: function(c) {
                     c.innerHTML = `
-                        <div style="position:absolute; bottom:30px; left:15px; font-size:60px;">👩‍‍🦰👧</div>
-                        <div style="position:absolute; top:0; bottom:0; left:120px; width:70px; background:#00cec9; opacity:0.7; display:flex; justify-content:center; align-items:center; color:white; font-size:30px;">🌊</div>
-                        <div id="wood" class="draggable" style="position:absolute; top:30px; left:20px; font-size:50px;">🪵</div>
-                        <div id="rope" class="draggable" style="position:absolute; top:30px; right:30px; font-size:50px;">🧵</div>
+                        <div style="text-align:center; padding-top:60px;">
+                            <div id="piggy" style="font-size:110px; transition: transform 0.5s;">🐷</div>
+                            <div id="coin" style="font-size:50px; display:none;">🪙</div>
+                        </div>
                     `;
-                    let w = document.getElementById('wood'), r = document.getElementById('rope');
-                    makeDraggable(w, check); makeDraggable(r, check);
-                    function check() {
-                        if (isOverlapping(w.getBoundingClientRect(), r.getBoundingClientRect())) {
-                            playSound('combine');
-                            w.style.display = 'none'; r.style.left = '125px'; r.style.top = '220px'; r.innerHTML = "🪜";
-                            setTimeout(() => winLevel('Jembatan selesai! Lily & Asti berhasil menyeberang.'), 500);
-                        }
-                    }
+                    let flipped = false;
+
+                    // Sensor Terbalik
+                    onFlipCallback = function() {
+                        if (flipped) return;
+                        flipped = true;
+                        document.getElementById('piggy').style.transform = "rotate(180deg)";
+                        document.getElementById('coin').style.display = "block";
+                        playSound('win');
+                        setTimeout(() => winLevel('Koin keluar saat HP dibalikkan!'), 500);
+                    };
+
+                    // Fallback Click
+                    document.getElementById('piggy').onclick = function() { onFlipCallback(); };
                 }
             };
         }
 
         // Procedural Generator Engine for Levels 4 to 500
-        let templateType = lvlIndex % 8;
+        let templateType = lvlIndex % 10;
         
         if (templateType === 0) { // Math Match Trick
             let a = (num % 7) + 2;
@@ -449,42 +540,4 @@
                 hint: 'Geser angka hasil ke samping untuk menemukan angka yang benar di belakangnya!',
                 setup: function(c) {
                     c.innerHTML = `
-                        <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:45px; font-weight:bold; gap:10px;">
-                            <span>${a} + ${b} =</span>
-                            <div id="hidden-ans" onclick="winLevel('Matematika jenius!')" style="position:absolute; right:70px; cursor:pointer; color:#06d6a0;">${correctResult}</div>
-                            <div id="wrong-ans" class="draggable" style="background:#ff7675; color:white; padding:5px 15px; border-radius:12px; cursor:grab; position:absolute; right:70px;">${wrongResult}</div>
-                        </div>
-                    `;
-                    makeDraggable(document.getElementById('wrong-ans'));
-                }
-            };
-        } else if (templateType === 1) { // Feed Character
-            let foodList = ['🍕', '🍔', '🍗', '🍎', '🍩', '🥩'];
-            let charList = ['🐱', '🐶', '🧔‍♂️', '👵', '🦁'];
-            let food = foodList[num % foodList.length];
-            let char = charList[num % charList.length];
-            return {
-                num: num, series: seriesName,
-                question: `Beri makan ${char} dengan ${food}!`,
-                hint: `Seret ${food} mendekati mulut ${char}!`,
-                setup: function(c) {
-                    c.innerHTML = `
-                        <div id="target-char" style="position:absolute; bottom:40px; left:50%; transform:translateX(-50%); font-size:90px;">${char}</div>
-                        <div id="food-item" class="draggable" style="position:absolute; top:40px; left:40px; font-size:60px;">${food}</div>
-                    `;
-                    let f = document.getElementById('food-item'), ch = document.getElementById('target-char');
-                    makeDraggable(f, () => {
-                        if (isOverlapping(f.getBoundingClientRect(), ch.getBoundingClientRect())) {
-                            f.style.display = 'none'; ch.innerHTML = "😋" + char;
-                            setTimeout(() => winLevel(`Kenyang sekali! ${char} senang.`), 500);
-                        }
-                    });
-                }
-            };
-        } else if (templateType === 2) { // Drag Word Trick
-            return {
-                num: num, series: seriesName,
-                question: `Nyalakan <span id="drag-fire" class="interactable-text">API</span> untuk menghangatkan ruangan!`,
-                hint: 'Seret kata "API" dari teks teka-teki ke kayu bakar!',
-                setup: function(c) {
-                    c.innerHTML = `<div id="wood-stack" style="posit
+           
