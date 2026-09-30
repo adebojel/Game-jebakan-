@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Game Teka-Teki Jebakan</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f3f8;
@@ -56,6 +56,9 @@
             color: #ee5253;
             cursor: grab;
             display: inline-block;
+            position: relative;
+            z-index: 10;
+            font-weight: bold;
         }
         .play-area {
             flex: 1;
@@ -70,6 +73,7 @@
             position: absolute;
             cursor: grab;
             touch-action: none;
+            z-index: 10;
         }
         #ad-modal {
             display: none;
@@ -135,6 +139,13 @@
     let currentLevel = 0;
     let hintTextData = "";
 
+    function isOverlapping(rect1, rect2) {
+        return !(rect1.right < rect2.left || 
+                 rect1.left > rect2.right || 
+                 rect1.bottom < rect2.top || 
+                 rect1.top > rect2.bottom);
+    }
+
     const levels = [
         {
             num: 1,
@@ -142,9 +153,11 @@
             hint: 'Geser kata "api" yang ada pada teks judul di atas langsung ke kayu.',
             setup: function(container) {
                 container.innerHTML = `<div id="kayu" style="position:absolute; bottom:30px; left:130px; font-size:60px;">🪵</div>`;
-                makeDraggable(document.getElementById('drag-api'), (x, y) => {
-                    let kayu = document.getElementById('kayu').getBoundingClientRect();
-                    if (x > kayu.left && x < kayu.right && y > kayu.top && y < kayu.bottom) {
+                let apiEl = document.getElementById('drag-api');
+                makeDraggable(apiEl, () => {
+                    let kayuRect = document.getElementById('kayu').getBoundingClientRect();
+                    let apiRect = apiEl.getBoundingClientRect();
+                    if (isOverlapping(apiRect, kayuRect)) {
                         document.getElementById('kayu').innerHTML = "🔥";
                         setTimeout(winLevel, 500);
                     }
@@ -160,9 +173,10 @@
                     <div id="gajah" onclick="gajahGagal()" style="position:absolute; bottom:20px; left:20px; font-size:60px; cursor:pointer;">🐘</div>
                     <div id="pagar" class="draggable" style="position:absolute; bottom:0px; left:160px; font-size:50px;">🪵🧱</div>
                 `;
-                makeDraggable(document.getElementById('pagar'), (x, y) => {
-                    let pagar = document.getElementById('pagar');
-                    if (parseInt(pagar.style.top) > 250) {
+                let pagar = document.getElementById('pagar');
+                makeDraggable(pagar, () => {
+                    let topVal = parseInt(pagar.style.top) || 0;
+                    if (topVal > 150) {
                         pagar.style.display = 'none';
                     }
                 });
@@ -175,7 +189,7 @@
             setup: function(container) {
                 container.innerHTML = `
                     <div id="pintu" style="position:absolute; top:80px; left:140px; font-size:80px;">🚪</div>
-                    <div id="kunci" class="draggable" style="position:absolute; top:280px; left:40px; font-size:25px; transition: transform 0.2s;">🔑</div>
+                    <div id="kunci" class="draggable" style="position:absolute; top:200px; left:40px; font-size:25px; transition: transform 0.2s;">🔑</div>
                 `;
                 let size = 25;
                 let kunci = document.getElementById('kunci');
@@ -183,10 +197,11 @@
                     size += 15;
                     kunci.style.fontSize = size + 'px';
                 });
-                makeDraggable(kunci, (x, y) => {
-                    let pintu = document.getElementById('pintu').getBoundingClientRect();
-                    if (x > pintu.left && x < pintu.right && y > pintu.top && y < pintu.bottom && size >= 55) {
-                        document.getElementById('pintu').innerHTML = "🚪✨ (TERBUKA)";
+                makeDraggable(kunci, () => {
+                    let pintuRect = document.getElementById('pintu').getBoundingClientRect();
+                    let kunciRect = kunci.getBoundingClientRect();
+                    if (isOverlapping(kunciRect, pintuRect) && size >= 55) {
+                        document.getElementById('pintu').innerHTML = "🚪✨";
                         setTimeout(winLevel, 500);
                     }
                 });
@@ -198,13 +213,15 @@
             hint: 'Tarik kata "LANJUT" di dalam soal ke dalam kotak permainan.',
             setup: function(container) {
                 container.innerHTML = `
-                    <button style="position:absolute; top:100px; left:50px; padding:10px 20px;">ULANG</button>
-                    <button style="position:absolute; top:100px; left:200px; padding:10px 20px;">KELUAR</button>
-                    <div id="drop-zone" style="position:absolute; bottom:50px; left:50px; right:50px; height:100px; border:2px dashed #ccc; display:flex; justify-content:center; align-items:center; color:#aaa;">Taruh tombol di sini</div>
+                    <button style="position:absolute; top:80px; left:40px; padding:10px 20px;">ULANG</button>
+                    <button style="position:absolute; top:80px; left:200px; padding:10px 20px;">KELUAR</button>
+                    <div id="drop-zone" style="position:absolute; bottom:50px; left:40px; right:40px; height:100px; border:2px dashed #ccc; display:flex; justify-content:center; align-items:center; color:#aaa;">Taruh tombol di sini</div>
                 `;
-                makeDraggable(document.getElementById('drag-lanjut'), (x, y) => {
-                    let zone = document.getElementById('drop-zone').getBoundingClientRect();
-                    if (x > zone.left && x < zone.right && y > zone.top && y < zone.bottom) {
+                let lanjutEl = document.getElementById('drag-lanjut');
+                makeDraggable(lanjutEl, () => {
+                    let zoneRect = document.getElementById('drop-zone').getBoundingClientRect();
+                    let lanjutRect = lanjutEl.getBoundingClientRect();
+                    if (isOverlapping(lanjutRect, zoneRect)) {
                         winLevel();
                     }
                 });
@@ -265,8 +282,8 @@
         let f2 = document.getElementById('f2').getBoundingClientRect();
         let piring = document.getElementById('piring').getBoundingClientRect();
 
-        let f1OnPiring = !(f1.right < piring.left || f1.left > piring.right || f1.bottom < piring.top || f1.top > piring.bottom);
-        let f2OnPiring = !(f2.right < piring.left || f2.left > piring.right || f2.bottom < piring.top || f2.top > piring.bottom);
+        let f1OnPiring = isOverlapping(f1, piring);
+        let f2OnPiring = isOverlapping(f2, piring);
 
         if(!f1OnPiring && !f2OnPiring) {
             winLevel();
@@ -276,41 +293,44 @@
     }
 
     function makeDraggable(elmnt, onDropCallback) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        elmnt.onmousedown = dragMouseDown;
-        elmnt.ontouchstart = dragMouseDown;
+        let startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
 
-        function dragMouseDown(e) {
-            e = e || window.event;
-            let clientX = e.clientX || e.touches[0].clientX;
-            let clientY = e.clientY || e.touches[0].clientY;
-            pos3 = clientX;
-            pos4 = clientY;
-            document.onmouseup = closeDragElement;
-            document.ontouchend = closeDragElement;
-            document.onmousemove = elementDrag;
-            document.ontouchmove = elementDrag;
+        elmnt.addEventListener('touchstart', dragStart, { passive: false });
+        elmnt.addEventListener('mousedown', dragStart);
+
+        function dragStart(e) {
+            e.preventDefault();
+            let touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            
+            initialLeft = parseInt(elmnt.style.left) || 0;
+            initialTop = parseInt(elmnt.style.top) || 0;
+
+            document.addEventListener('touchmove', dragMove, { passive: false });
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('touchend', dragEnd);
+            document.addEventListener('mouseup', dragEnd);
         }
 
-        function elementDrag(e) {
-            e = e || window.event;
-            let clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-            let clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-            pos1 = pos3 - clientX;
-            pos2 = pos4 - clientY;
-            pos3 = clientX;
-            pos4 = clientY;
-            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        function dragMove(e) {
+            e.preventDefault();
+            let touch = e.touches ? e.touches[0] : e;
+            let dx = touch.clientX - startX;
+            let dy = touch.clientY - startY;
+
+            elmnt.style.left = (initialLeft + dx) + 'px';
+            elmnt.style.top = (initialTop + dy) + 'px';
         }
 
-        function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousemove = null;
-            document.ontouchend = null;
-            document.ontouchmove = null;
+        function dragEnd(e) {
+            document.removeEventListener('touchmove', dragMove);
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('touchend', dragEnd);
+            document.removeEventListener('mouseup', dragEnd);
+
             if (onDropCallback) {
-                onDropCallback(pos3, pos4);
+                onDropCallback();
             }
         }
     }
