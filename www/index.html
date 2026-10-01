@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>Game Jebakan Brain Out</title>
+    <title>Mega Fusion Brain Out (Sensor Edition)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,224 +12,270 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #e3f2fd;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #686de0 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 10px;
+            padding: 12px;
+            overflow: hidden;
         }
 
-        /* Container Main Card */
         .game-card {
-            background-color: #ff6b6b;
+            background: #ffffff;
             width: 100%;
             max-width: 420px;
-            height: 90vh;
-            max-height: 750px;
-            border-radius: 28px;
-            padding: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            height: 92vh;
+            max-height: 760px;
+            border-radius: 32px;
+            padding: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            border: 4px solid #4834d4;
         }
 
-        /* Top Bar Header */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            background: #f0f3f8;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
         .coin-badge {
-            background-color: #ff8e8e;
+            background: linear-gradient(180deg, #f1c40f, #f39c12);
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 50px;
             color: #ffffff;
-            font-weight: bold;
+            font-weight: 800;
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 0 #d35400, 0 5px 10px rgba(0,0,0,0.15);
         }
 
         .level-info {
             text-align: center;
-            color: #ffffff;
         }
 
         .level-title {
             font-size: 18px;
-            font-weight: 800;
+            font-weight: 900;
+            color: #2c3e50;
             letter-spacing: 0.5px;
         }
 
         .level-tag {
             font-size: 10px;
-            background-color: #ffeaa7;
-            color: #d63031;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
+            background: #eb4d4b;
+            color: #ffffff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
             display: inline-block;
             margin-top: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(235, 77, 75, 0.3);
         }
 
         .action-buttons {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .icon-btn {
-            background-color: #48dbfb;
+            background: linear-gradient(180deg, #00d2d3, #01a3a4);
             border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #006266, 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        /* Puzzle Canvas Area */
+        .icon-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #006266;
+        }
+
         .puzzle-card {
-            background-color: #fafafa;
+            background: linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%);
             flex: 1;
-            border-radius: 20px;
-            padding: 20px 15px;
+            border-radius: 24px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            margin: 10px 0;
+            margin: 14px 0;
+            border: 2px dashed #cbd5e1;
             overflow: hidden;
         }
 
         .puzzle-title {
-            color: #2d3436;
-            font-size: 18px;
-            font-weight: 700;
+            color: #1e293b;
+            font-size: 17px;
+            font-weight: 800;
             text-align: center;
-            margin-bottom: 15px;
-            min-height: 50px;
+            margin-bottom: 12px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
+            line-height: 1.3;
         }
 
         .puzzle-canvas {
             width: 100%;
             flex: 1;
-            border: 2px dashed #ccc;
-            border-radius: 16px;
+            background: #ffffff;
+            border-radius: 20px;
             position: relative;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
             align-items: center;
-            padding: 10px;
+            padding: 12px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
         }
 
-        /* Elements inside Puzzle Area */
         .game-object {
-            font-size: 55px;
+            font-size: 58px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 8px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+            border: 2px solid #f1f5f9;
         }
 
-        .game-object:active {
-            transform: scale(1.2);
+        .game-object.falling {
+            animation: fallAnimation 0.6s forwards ease-in;
         }
 
-        /* Bottom Control Bar */
+        @keyframes fallAnimation {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(180px) rotate(45deg); opacity: 0; }
+        }
+
+        .sensor-badge {
+            position: absolute;
+            bottom: 8px;
+            background: rgba(16, 172, 132, 0.15);
+            color: #10ac84;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         .bottom-bar {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-bottom {
             flex: 1;
-            padding: 12px;
+            padding: 14px 10px;
             border: none;
-            border-radius: 20px;
-            font-weight: bold;
+            border-radius: 18px;
+            font-weight: 800;
             font-size: 13px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
         .btn-hint {
-            background-color: #00cec9;
-            color: #ffffff;
+            background: linear-gradient(180deg, #10ac84, #1dd1a1);
+            box-shadow: 0 5px 0 #10ac84, 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .btn-skip {
-            background-color: #ffeaa7;
-            color: #d63031;
+            background: linear-gradient(180deg, #ff9f43, #ee5253);
+            box-shadow: 0 5px 0 #b14343, 0 6px 12px rgba(0,0,0,0.15);
         }
 
-        /* Alert Overlay */
         .overlay-msg {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.85);
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: bold;
+            background: rgba(15, 23, 42, 0.92);
+            color: #ffffff;
+            padding: 16px 28px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 16px;
             display: none;
             z-index: 100;
             text-align: center;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.2);
         }
     </style>
 </head>
 <body>
 
     <div class="game-card">
-        <!-- Top Bar -->
+        <!-- Header -->
         <div class="top-bar">
             <div class="coin-badge">
                 <span>🟡</span> <span id="coin-count">60</span>
             </div>
             <div class="level-info">
                 <div class="level-title" id="level-title-text">LEVEL 1</div>
-                <div class="level-tag">BRAIN OUT</div>
+                <div class="level-tag">BRAIN TEASER</div>
             </div>
             <div class="action-buttons">
                 <button class="icon-btn" onclick="restartLevel()">🔄</button>
-                <button class="icon-btn" onclick="toggleSensorInfo()">📱</button>
+                <button class="icon-btn" onclick="testVibration()">📳</button>
             </div>
         </div>
 
-        <!-- Area Puzzle -->
+        <!-- Puzzle Arena -->
         <div class="puzzle-card">
             <div class="puzzle-title" id="puzzle-instruction">Memuat teka-teki...</div>
             <div class="puzzle-canvas" id="puzzle-canvas"></div>
+            <div class="sensor-badge" id="sensor-badge" style="display: none;">
+                📡 Sensor Gerak Aktif
+            </div>
             <div class="overlay-msg" id="overlay-msg"></div>
         </div>
 
-        <!-- Bottom Buttons -->
+        <!-- Controls -->
         <div class="bottom-bar">
             <button class="btn-bottom btn-hint" onclick="useHint()">💡 Petunjuk (20 🪙)</button>
             <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭️ Lewati (30 🪙)</button>
@@ -237,25 +283,26 @@
     </div>
 
     <script>
-        // --- 1. DETEKTOR ERROR UNTUK HP ANDROID ---
+        // --- 1. DETEKTOR ERROR KODING ---
         window.onerror = function(msg, url, lineNo) {
             alert("🔴 Error Kodingan:\n" + msg + "\nBaris: " + lineNo);
             return false;
         };
 
-        // --- 2. STATE GAME & LOCALSTORAGE ---
+        // --- 2. GAME STATE ---
         let gameState = {
             currentLevel: parseInt(localStorage.getItem('game_level')) || 1,
             coins: parseInt(localStorage.getItem('game_coins')) || 60
         };
 
-        // --- 3. WEB AUDIO API (SOUND ENGINE OFFLINE) ---
+        // --- 3. AUDIO ENGINE & VIBRATION ---
         let audioCtx = null;
         function initAudio() {
             if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
             }
-            if (audioCtx.state === 'suspended') {
+            if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
         }
@@ -263,113 +310,196 @@
         function playSound(type) {
             try {
                 initAudio();
+                if (!audioCtx) return;
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
 
                 if (type === 'correct') {
-                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.3);
                 } else if (type === 'wrong') {
-                    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.2);
                 } else if (type === 'click') {
-                    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.05);
                 }
-            } catch (e) {
-                console.log("Audio diblokir atau belum aktif.");
+            } catch (e) {}
+        }
+
+        function triggerVibrate(pattern = 60) {
+            if ("vibrate" in navigator) {
+                navigator.vibrate(pattern);
             }
         }
 
-        // --- 4. GENERATOR DATA 500 LEVEL ---
-        function getLevelData(levelNum) {
-            // Contoh implementasi dinamis untuk 500 level
-            // Menggunakan pola generator agar tidak memberatkan memori HP
+        function testVibration() {
+            triggerVibrate([100, 50, 100]);
+            playSound('click');
+        }
+
+        // --- 4. SENSOR HARDWARE ENGINE (ACCELEROMETER / GYROSCOPE) ---
+        let activeSensorType = null;
+        let lastShakeTime = 0;
+
+        function enableSensors(sensorType) {
+            disableSensors(); // Reset listener sebelumnya
+            activeSensorType = sensorType;
+            document.getElementById('sensor-badge').style.display = 'flex';
+
+            if (sensorType === 'shake') {
+                window.addEventListener('devicemotion', handleMotion, false);
+            } else if (sensorType === 'tilt') {
+                window.addEventListener('deviceorientation', handleOrientation, false);
+            }
+        }
+
+        function disableSensors() {
+            window.removeEventListener('devicemotion', handleMotion, false);
+            window.removeEventListener('deviceorientation', handleOrientation, false);
+            activeSensorType = null;
+            document.getElementById('sensor-badge').style.display = 'none';
+        }
+
+        // Deteksi Goyang (Shake)
+        function handleMotion(e) {
+            const acc = e.accelerationIncludingGravity;
+            if (!acc) return;
+            const totalForce = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
             
+            if (totalForce > 24) { // Threshold Goyangan HP
+                const now = Date.now();
+                if (now - lastShakeTime > 800) {
+                    lastShakeTime = now;
+                    onSensorTriggered('shake');
+                }
+            }
+        }
+
+        // Deteksi Miring (Tilt)
+        function handleOrientation(e) {
+            const gamma = e.gamma; // Kemiringan Kiri/Kanan (-90 ke 90)
+            if (Math.abs(gamma) > 35) { // HP Dimiringkan > 35 Derajat
+                onSensorTriggered('tilt');
+            }
+        }
+
+        function onSensorTriggered(action) {
+            if (activeSensorType === action) {
+                triggerVibrate(150);
+                checkAnswer(true);
+            }
+        }
+
+        // --- 5. DATA 500 LEVEL (TERMASUK LEVEL SENSOR) ---
+        function getLevelData(levelNum) {
             if (levelNum === 1) {
                 return {
                     title: "Buah manakah yang paling besar secara nyata?",
-                    hint: "Pikirkan ukuran buah aslinya di dunia nyata, bukan ukuran emoji!",
+                    hint: "Pikirkan ukuran asli di dunia nyata!",
                     type: "choice",
+                    sensor: null,
                     items: [
-                        { id: 1, text: "🍇", size: "60px", correct: false },
-                        { id: 2, text: "🍓", size: "70px", correct: false },
-                        { id: 3, text: "🍎", size: "50px", correct: false },
-                        { id: 4, text: "🍉", size: "45px", correct: true } // Semangka paling besar di dunia nyata
+                        { text: "🍇", size: "60px", correct: false },
+                        { text: "🍓", size: "70px", correct: false },
+                        { text: "🍎", size: "50px", correct: false },
+                        { text: "🍉", size: "45px", correct: true }
                     ]
                 };
             } else if (levelNum === 2) {
+                // LEVEL SENSOR GOYANG HP
                 return {
-                    title: "Berapakah jumlah bulu mata di layar?",
-                    hint: "Hitung semua garis hitam dengan teliti!",
-                    type: "choice",
+                    title: "Goyang HP Anda untuk menjatuhkan Apel dari pohon!",
+                    hint: "Goyangkan HP Moto G67 Anda agak kuat!",
+                    type: "sensor_shake",
+                    sensor: "shake",
                     items: [
-                        { id: 1, text: "👀 5", size: "50px", correct: false },
-                        { id: 2, text: "👀 8", size: "50px", correct: true },
-                        { id: 3, text: "👀 10", size: "50px", correct: false }
+                        { id: "apple-tree", text: "🌳🍎🍎", size: "90px" }
                     ]
                 };
             } else if (levelNum === 3) {
+                // LEVEL SENSOR MIRINGKAN HP
                 return {
-                    title: "Temukan warna paling gelap!",
-                    hint: "Teks judul juga memiliki warna!",
-                    type: "choice",
+                    title: "Miringkan HP Anda ke samping untuk menggelindingkan bola!",
+                    hint: "Miringkan posisi HP Anda ke arah kanan!",
+                    type: "sensor_tilt",
+                    sensor: "tilt",
                     items: [
-                        { id: 1, text: "🔴", size: "55px", correct: false },
-                        { id: 2, text: "🟡", size: "55px", correct: false },
-                        { id: 3, text: "⬛", size: "55px", correct: true }
+                        { id: "rolling-ball", text: "⚽ ➡️ 🕳️", size: "70px" }
                     ]
                 };
             } else {
-                // Generator Otomatis untuk Level 4 hingga 500
-                const targetNumber = (levelNum % 5) + 1;
-                return {
-                    title: `Teka-teki Level ${levelNum}: Ketuk angka ke-${targetNumber}!`,
-                    hint: `Pilih item dengan urutan nomor ${targetNumber}`,
-                    type: "choice",
-                    items: [
-                        { id: 1, text: "1️⃣", size: "50px", correct: targetNumber === 1 },
-                        { id: 2, text: "2️⃣", size: "50px", correct: targetNumber === 2 },
-                        { id: 3, text: "3️⃣", size: "50px", correct: targetNumber === 3 },
-                        { id: 4, text: "4️⃣", size: "50px", correct: targetNumber === 4 }
-                    ]
-                };
+                // GENERATOR UTAMA HINGGA 500 LEVEL
+                const isSensorLevel = (levelNum % 4 === 0);
+                if (isSensorLevel) {
+                    return {
+                        title: `Level ${levelNum}: Goyang HP Anda untuk menyelesaikan tantangan ini!`,
+                        hint: "Goyangkan perangkat HP Anda!",
+                        type: "sensor_shake",
+                        sensor: "shake",
+                        items: [{ text: "📦", size: "80px" }]
+                    };
+                } else {
+                    const target = (levelNum % 3) + 1;
+                    return {
+                        title: `Level ${levelNum}: Ketuk angka ke-${target}!`,
+                        hint: `Pilih angka nomor ${target}`,
+                        type: "choice",
+                        sensor: null,
+                        items: [
+                            { text: "1️⃣", size: "52px", correct: target === 1 },
+                            { text: "2️⃣", size: "52px", correct: target === 2 },
+                            { text: "3️⃣", size: "52px", correct: target === 3 }
+                        ]
+                    };
+                }
             }
         }
 
-        // --- 5. LOGIKA UTAMA RENDER GAME ---
+        // --- 6. RENDERER ENGINE ---
         function loadLevel(levelNum) {
+            disableSensors(); // Matikan sensor level sebelumnya
             const data = getLevelData(levelNum);
             
-            // Update Header UI
             document.getElementById('level-title-text').innerText = "LEVEL " + levelNum;
             document.getElementById('coin-count').innerText = gameState.coins;
             document.getElementById('puzzle-instruction').innerText = data.title;
             
             const canvas = document.getElementById('puzzle-canvas');
-            canvas.innerHTML = ''; // Bersihkan area kerja puzzle
+            canvas.innerHTML = '';
 
-            // Render Item/Objek Game
+            // Aktifkan Sensor jika Level Membutuhkannya
+            if (data.sensor) {
+                enableSensors(data.sensor);
+            }
+
             if (data.type === 'choice') {
                 data.items.forEach(item => {
                     const el = document.createElement('div');
                     el.className = 'game-object';
                     el.innerText = item.text;
-                    el.style.fontSize = item.size || '50px';
-                    
+                    el.style.fontSize = item.size || '52px';
                     el.onclick = function() {
                         checkAnswer(item.correct);
                     };
-                    
+                    canvas.appendChild(el);
+                });
+            } else if (data.type.startsWith('sensor')) {
+                data.items.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'game-object';
+                    el.id = item.id || 'sensor-obj';
+                    el.innerText = item.text;
+                    el.style.fontSize = item.size || '70px';
                     canvas.appendChild(el);
                 });
             }
@@ -378,15 +508,18 @@
         function checkAnswer(isCorrect) {
             playSound('click');
             if (isCorrect) {
+                disableSensors();
+                triggerVibrate([80, 50, 100]);
                 playSound('correct');
-                showNotice("✅ BENAR!");
+                showNotice("🎉 HEBAT! BENAR!");
                 setTimeout(() => {
                     gameState.currentLevel++;
-                    gameState.coins += 5; // Bonus koin
+                    gameState.coins += 5;
                     saveProgress();
                     loadLevel(gameState.currentLevel);
-                }, 1000);
+                }, 900);
             } else {
+                triggerVibrate(200);
                 playSound('wrong');
                 showNotice("❌ SALAH! Coba lagi.");
             }
@@ -398,10 +531,10 @@
             overlay.style.display = 'block';
             setTimeout(() => {
                 overlay.style.display = 'none';
-            }, 1200);
+            }, 1100);
         }
 
-        // --- 6. FITUR PETUNJUK & LEWATI ---
+        // --- 7. KONTROL APLIKASI ---
         function useHint() {
             playSound('click');
             if (gameState.coins >= 20) {
@@ -411,7 +544,7 @@
                 const data = getLevelData(gameState.currentLevel);
                 alert("💡 Petunjuk: " + data.hint);
             } else {
-                alert("Koin tidak cukup!");
+                alert("Koin Anda tidak cukup!");
             }
         }
 
@@ -423,7 +556,7 @@
                 saveProgress();
                 loadLevel(gameState.currentLevel);
             } else {
-                alert("Koin tidak cukup!");
+                alert("Koin Anda tidak cukup!");
             }
         }
 
@@ -432,20 +565,10 @@
             loadLevel(gameState.currentLevel);
         }
 
-        function toggleSensorInfo() {
-            playSound('click');
-            alert("Fitur Sensor Aktif! Dibuat khusus untuk HP Moto G67.");
-        }
-
         function saveProgress() {
             localStorage.setItem('game_level', gameState.currentLevel);
             localStorage.setItem('game_coins', gameState.coins);
         }
 
-        // --- 7. STARTUP INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadLevel(gameState.currentLevel);
-        });
-    </script>
-</body>
-</html>
+            
