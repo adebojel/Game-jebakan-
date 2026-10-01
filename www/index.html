@@ -586,4 +586,117 @@
             }
         }
 
-     
+     // --- 7. CORE GAME ENGINE & RENDERING ---
+        let currentLevelData = null;
+
+        function loadLevel(levelNum) {
+            disableSensors();
+            currentLevelData = getLevelData(levelNum);
+
+            document.getElementById('level-title-text').innerText = `LEVEL ${levelNum}`;
+            document.getElementById('coin-count').innerText = gameState.coins;
+            document.getElementById('puzzle-instruction').innerText = currentLevelData.title;
+
+            const canvas = document.getElementById('puzzle-canvas');
+            canvas.innerHTML = '';
+
+            currentLevelData.items.forEach((item) => {
+                const obj = document.createElement('div');
+                obj.className = 'game-object';
+                obj.innerText = item.text;
+                obj.style.fontSize = item.size || '50px';
+
+                obj.onclick = () => {
+                    playSound('click');
+                    if (currentLevelData.type === 'choice') {
+                        checkAnswer(item.correct);
+                    }
+                };
+
+                canvas.appendChild(obj);
+            });
+
+            if (currentLevelData.sensor) {
+                enableSensors(currentLevelData.sensor);
+            }
+        }
+
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                playSound('correct');
+                triggerVibrate([80, 50, 80]);
+                showNotice("🎉 Jawaban Benar!");
+
+                setTimeout(() => {
+                    gameState.currentLevel++;
+                    saveProgress();
+
+                    if (gameState.currentLevel % 3 === 0) {
+                        showInterstitialAd();
+                    }
+
+                    loadLevel(gameState.currentLevel);
+                }, 1200);
+            } else {
+                playSound('wrong');
+                triggerVibrate(200);
+                showNotice("❌ Salah, Coba Lagi!");
+            }
+        }
+
+        function useHint() {
+            playSound('click');
+            if (gameState.coins >= 20) {
+                gameState.coins -= 20;
+                saveProgress();
+                document.getElementById('coin-count').innerText = gameState.coins;
+                alert("💡 Petunjuk:\n" + currentLevelData.hint);
+            } else {
+                alert("Koin tidak cukup! Tonton video untuk dapat +20 Koin.");
+            }
+        }
+
+        function skipLevel() {
+            playSound('click');
+            if (gameState.coins >= 30) {
+                gameState.coins -= 30;
+                gameState.currentLevel++;
+                saveProgress();
+                showNotice("⏭ Level Dilewati!");
+                setTimeout(() => {
+                    loadLevel(gameState.currentLevel);
+                }, 1000);
+            } else {
+                alert("Koin tidak cukup! Tonton video untuk dapat +20 Koin.");
+            }
+        }
+
+        function restartLevel() {
+            playSound('click');
+            loadLevel(gameState.currentLevel);
+        }
+
+        function showNotice(msg) {
+            const el = document.getElementById('overlay-msg');
+            el.innerText = msg;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 1200);
+        }
+
+        // --- 8. INITIALIZATION ON LOAD ---
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                loadLevel(gameState.currentLevel);
+            } catch (e) {
+                console.error("Gagal memuat level:", e);
+            }
+
+            setTimeout(() => {
+                initAdMob();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
