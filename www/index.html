@@ -46,7 +46,7 @@
             100% { transform: translate(30px, 30px) scale(1.15); }
         }
 
-        /* Card Container Utama */
+        /* Container Utama */
         .app-container {
             position: relative;
             z-index: 10;
@@ -66,7 +66,6 @@
             overflow: hidden;
         }
 
-        /* Management Screen Views */
         .screen {
             display: none;
             flex-direction: column;
@@ -77,7 +76,7 @@
             display: flex;
         }
 
-        /* --- 1. HOME SCREEN STYLES --- */
+        /* --- HOME SCREEN --- */
         .home-header {
             display: flex;
             justify-content: space-between;
@@ -174,7 +173,7 @@
         }
         .btn-settings:active { transform: translateY(3px); box-shadow: 0 2px 0 #0e7490; }
 
-        /* --- 2. GAME SCREEN STYLES --- */
+        /* --- GAME SCREEN --- */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -247,7 +246,7 @@
 
         .puzzle-title {
             color: #0f172a;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             text-align: center;
             margin-bottom: 10px;
@@ -271,10 +270,11 @@
             padding: 12px;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
             border: 1px solid #cbd5e1;
+            gap: 10px;
         }
 
         .game-object {
-            font-size: 50px;
+            font-size: 45px;
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
@@ -286,7 +286,7 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.08);
             border: 2px solid #f1f5f9;
         }
-        .game-object:active { transform: scale(1.2) !important; }
+        .game-object:active { transform: scale(1.15) !important; }
 
         .sensor-badge {
             position: absolute;
@@ -337,7 +337,7 @@
             border: 2px solid rgba(255,255,255,0.2);
         }
 
-        /* --- 3. MODAL OVERLAYS (LEVELS & SETTINGS & UNLOCK PROMPT) --- */
+        /* --- MODALS --- */
         .modal-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -401,7 +401,6 @@
         .level-item.current { background: linear-gradient(180deg, #f59e0b, #d97706); color: white; box-shadow: 0 3px 0 #b45309; border: 2px solid #0f172a; }
         .level-item.locked { background: #e2e8f0; color: #64748b; box-shadow: 0 3px 0 #cbd5e1; }
 
-        /* Setting List Rows */
         .setting-row {
             display: flex;
             justify-content: space-between;
@@ -427,11 +426,8 @@
             color: white;
             cursor: pointer;
         }
-        .toggle-btn.active {
-            background: #10b981;
-        }
+        .toggle-btn.active { background: #10b981; }
 
-        /* Unlock Level Prompt Dialog */
         .unlock-card {
             background: white;
             border-radius: 24px;
@@ -452,7 +448,7 @@
 
     <div class="app-container">
         
-        <!-- ==================== 1. BERANDA (HOME SCREEN) ==================== -->
+        <!-- 1. HOME SCREEN -->
         <div class="screen active" id="home-screen">
             <div class="home-header">
                 <div class="coin-badge">
@@ -480,9 +476,8 @@
             </div>
         </div>
 
-        <!-- ==================== 2. ARENA GAME (GAME SCREEN) ==================== -->
+        <!-- 2. GAME SCREEN -->
         <div class="screen" id="game-screen">
-            <!-- Top Bar -->
             <div class="top-bar">
                 <button class="icon-btn" title="Beranda" onclick="showHomeScreen()">🏠</button>
                 <div class="coin-badge">
@@ -498,12 +493,10 @@
                 </div>
             </div>
 
-            <!-- Progress Indicator -->
             <div class="progress-bar-container">
                 <div class="progress-bar-fill" id="progress-fill"></div>
             </div>
 
-            <!-- Puzzle Arena -->
             <div class="puzzle-card">
                 <div class="puzzle-title" id="puzzle-instruction">Memuat teka-teki...</div>
                 <div class="puzzle-canvas" id="puzzle-canvas"></div>
@@ -513,14 +506,13 @@
                 <div class="overlay-msg" id="overlay-msg"></div>
             </div>
 
-            <!-- Bottom Bar -->
             <div class="bottom-bar">
                 <button class="btn-bottom btn-hint" onclick="useHint()">💡 Petunjuk (20 🪙)</button>
                 <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭ Lewati (30 🪙)</button>
             </div>
         </div>
 
-        <!-- ==================== 3. MODAL PENGATURAN ==================== -->
+        <!-- 3. SETTINGS MODAL -->
         <div class="modal-overlay" id="settings-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -529,7 +521,7 @@
                 </div>
                 <div>
                     <div class="setting-row">
-                        <div class="setting-label">🎵 Musik & Suara (BGM/SFX)</div>
+                        <div class="setting-label">🎵 Musik & Suara</div>
                         <button class="toggle-btn active" id="toggle-sound-btn" onclick="toggleSound()">AKTIF</button>
                     </div>
                     <div class="setting-row">
@@ -540,7 +532,7 @@
             </div>
         </div>
 
-        <!-- ==================== 4. MODAL PILIH LEVEL ==================== -->
+        <!-- 4. LEVEL SELECT MODAL -->
         <div class="modal-overlay" id="level-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -551,7 +543,7 @@
             </div>
         </div>
 
-        <!-- ==================== 5. PROMPT UNLOCK LEVEL ==================== -->
+        <!-- 5. UNLOCK LEVEL PROMPT -->
         <div class="modal-overlay" id="unlock-modal">
             <div class="unlock-card">
                 <h4>🔒 Level Terkunci</h4>
@@ -567,13 +559,6 @@
     </div>
 
     <script>
-// --- 1. DETEKTOR ERROR ---
-        window.onerror = function(msg, url, lineNo) {
-            console.error("🔴 Error Info: " + msg + " (Baris: " + lineNo + ")");
-            return false;
-        };
-
-        // --- 2. GAME STATE (MAX 50 LEVEL) ---
         const MAX_LEVELS = 50;
         
         let rawLevel = parseInt(localStorage.getItem('game_level')) || 1;
@@ -586,6 +571,10 @@
             soundEnabled: localStorage.getItem('game_sound') !== 'false',
             vibrateEnabled: localStorage.getItem('game_vibrate') !== 'false'
         };
+
+        let isLevelCompleting = false;
+    let activeSensorType = null;
+        let lastSensorTriggerTime = 0;
 
         function saveProgress() {
             localStorage.setItem('game_level', gameState.currentLevel);
@@ -602,7 +591,6 @@
             });
         }
 
-        // --- 3. NAVIGATION MANAGEMENT ---
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -618,11 +606,37 @@
             loadLevel(gameState.currentLevel);
         }
 
-        // --- 4. AUDIO & VIBRATION ENGINE ---
+        /* --- PERBAIKAN SISTEM GETARAN (HARDWARE HAPTICS & FALLBACK) --- */
+        async function triggerVibrate(pattern = 100) {
+            if (!gameState.vibrateEnabled) return;
+            try {
+                // Utamakan Capacitor Haptics jika di APK
+                if (window.Capacitor?.Plugins?.Haptics) {
+                    const duration = Array.isArray(pattern) ? pattern[0] : pattern;
+                    await window.Capacitor.Plugins.Haptics.vibrate({ duration: duration || 100 });
+                } 
+                // Fallback ke navigator.vibrate standar web
+                else if ("vibrate" in navigator) {
+                    navigator.vibrate(pattern);
+                }
+            } catch (e) {
+                console.log("Vibrate status:", e);
+            }
+        }
+
+        /* --- SISTEM MUSIK BACKGROUND FOCUS, CALM, & MENANTANG --- */
         let audioCtx = null;
         let bgmInterval = null;
-        let bgmNoteIndex = 0;
-        const bgmNotes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        let bgmStep = 0;
+
+        // Tangga nada ambient pentatonik misterius & fokus
+        const bgmNotes = [130.81, 155.56, 174.61, 196.00, 233.08, 261.63, 311.13, 392.00];
+        const chordPad = [
+            [130.81, 196.00, 311.13], // Cm
+            [116.54, 174.61, 293.66], // Bb
+            [103.83, 155.56, 261.63], // Ab
+            [98.00,  146.83, 246.94]  // G
+        ];
 
         function initAudio() {
             if (!audioCtx) {
@@ -632,6 +646,69 @@
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
+        }
+
+        function playBgmStep() {
+            if (!gameState.soundEnabled || !audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+
+                // 1. Warm Synth Pad Chords (Menciptakan Suasana Tenang & Fokus)
+                if (bgmStep % 8 === 0) {
+                    const chordIdx = Math.floor(bgmStep / 8) % chordPad.length;
+                    chordPad[chordIdx].forEach(freq => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        const filter = audioCtx.createBiquadFilter();
+
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now);
+
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(400, now);
+
+                        gain.gain.setValueAtTime(0.001, now);
+                        gain.gain.linearRampToValueAtTime(0.025, now + 0.5);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+                        osc.connect(filter);
+                        filter.connect(gain);
+                        gain.connect(audioCtx.destination);
+
+                        osc.start(now);
+                        osc.stop(now + 3.0);
+                    });
+                }
+
+                // 2. Arpeggio Synth Note (Memberikan Kesan Menantang & Asah Otak)
+                if (Math.random() > 0.25) {
+                    const noteIdx = (bgmStep * 3 + Math.floor(Math.random() * 3)) % bgmNotes.length;
+                    const freq = bgmNotes[noteIdx];
+
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    const filter = audioCtx.createBiquadFilter();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(750, now);
+
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(0.02, now + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.75);
+                }
+
+                bgmStep = (bgmStep + 1) % 32;
+            } catch(e) {}
         }
 
         function playSound(type) {
@@ -672,35 +749,13 @@
             } catch (e) {}
         }
 
-        function playBgmNote() {
-            if (!gameState.soundEnabled || !audioCtx) return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                
-                const freq = bgmNotes[bgmNoteIndex % bgmNotes.length];
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
-
-                bgmNoteIndex = (bgmNoteIndex + 1) % bgmNotes.length;
-            } catch(e) {}
-        }
-
         function toggleSound() {
             gameState.soundEnabled = !gameState.soundEnabled;
             saveProgress();
             updateSettingsUI();
             if (gameState.soundEnabled) {
                 initAudio();
-                if (!bgmInterval) bgmInterval = setInterval(playBgmNote, 380);
+                if (!bgmInterval) bgmInterval = setInterval(playBgmStep, 360);
             } else {
                 if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
             }
@@ -710,11 +765,8 @@
             gameState.vibrateEnabled = !gameState.vibrateEnabled;
             saveProgress();
             updateSettingsUI();
-        }
-
-        function triggerVibrate(pattern = 60) {
-            if (gameState.vibrateEnabled && "vibrate" in navigator) {
-                navigator.vibrate(pattern);
+            if (gameState.vibrateEnabled) {
+                triggerVibrate(150);
             }
         }
 
@@ -726,11 +778,9 @@
             const vibBtn = document.getElementById('toggle-vibrate-btn');
             vibBtn.innerText = gameState.vibrateEnabled ? 'AKTIF' : 'MATI';
             vibBtn.className = 'toggle-btn ' + (gameState.vibrateEnabled ? 'active' : '');
-                    }
-        // --- 5. HARDWARE SENSOR ENGINE ---
-        let activeSensorType = null;
-        let lastShakeTime = 0;
+        }
 
+        /* --- SENSOR DENGAN PENGUNCI & AMBANG BATAS --- */
         function enableSensors(sensorType) {
             disableSensors();
             activeSensorType = sensorType;
@@ -751,34 +801,39 @@
         }
 
         function handleMotion(e) {
+            if (isLevelCompleting) return;
             const acc = e.accelerationIncludingGravity;
             if (!acc) return;
             const totalForce = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
             
-            if (totalForce > 24) {
+            if (totalForce > 40) {
                 const now = Date.now();
-                if (now - lastShakeTime > 800) {
-                    lastShakeTime = now;
+                if (now - lastSensorTriggerTime > 1500) {
+                    lastSensorTriggerTime = now;
                     onSensorTriggered('shake');
                 }
             }
         }
 
         function handleOrientation(e) {
+            if (isLevelCompleting) return;
             const gamma = e.gamma;
-            if (Math.abs(gamma) > 35) {
-                onSensorTriggered('tilt');
+            if (Math.abs(gamma) > 55) {
+                const now = Date.now();
+                if (now - lastSensorTriggerTime > 1500) {
+                    lastSensorTriggerTime = now;
+                    onSensorTriggered('tilt');
+                }
             }
         }
-
         function onSensorTriggered(action) {
-            if (activeSensorType === action) {
+            if (activeSensorType === action && !isLevelCompleting) {
                 triggerVibrate(150);
                 checkAnswer(true);
             }
         }
 
-        // --- 6. ADMOB INTEGRATION (TANPA IKLAN SIMULASI) ---
+        /* --- ADMOB INTEGRATION --- */
         const ADMOB_TEST_BANNER = 'ca-app-pub-9305273212801233/9094905669';
         const ADMOB_TEST_INTERSTITIAL = 'ca-app-pub-9305273212801233/1355093008';
         const ADMOB_TEST_REWARDED = 'ca-app-pub-9305273212801233/8495216428';
@@ -816,25 +871,19 @@
 
         async function watchRewardedAd(onSuccess = null) {
             playSound('click');
-
+            triggerVibrate(50);
             if (!window.Capacitor?.Plugins?.AdMob) {
                 showNotice("⚠️ AdMob hanya aktif di aplikasi Android (APK).");
                 return;
             }
-
             const { AdMob } = window.Capacitor.Plugins;
-
             try {
                 showNotice("⏳ Memuat Iklan...");
                 const rewardListener = await AdMob.addListener('onRewardVideoReward', () => {
-                    if (onSuccess) {
-                        onSuccess();
-                    } else {
-                        grantAdReward();
-                    }
+                    if (onSuccess) onSuccess();
+                    else grantAdReward();
                     rewardListener.remove();
                 });
-
                 await AdMob.prepareRewardVideoAd({ adId: ADMOB_TEST_REWARDED });
                 await AdMob.showRewardVideoAd();
             } catch (e) {
@@ -848,102 +897,73 @@
             showNotice("🎉 +20 Koin Diperoleh!");
         }
 
-        // --- 7. DATA LEVEL GENERATOR (LEVEL 1 SAMPAI 50) ---
+        /* --- BANK LEVEL (1 - 50) --- */
         function getLevelData(levelNum) {
-            if (levelNum === 1) {
+            const levels = {
+                1: { title: "Buah manakah yang paling besar secara nyata?", hint: "Semangka adalah buah terbesar!", type: "choice", items: [{text:"🍇", correct:false}, {text:"🍓", correct:false}, {text:"🍎", correct:false}, {text:"🍉", correct:true}] },
+                2: { title: "Nyalakan semua lilin di kegelapan!", hint: "Gunakan korek api 🔥 untuk menyalakan lilin!", type: "choice", items: [{text:"🕯️", correct:false}, {text:"🕯️", correct:false}, {text:"🔥", correct:true}] },
+                3: { title: "Goyangkan HP Anda untuk merontokkan apel dari pohon!", hint: "Goyangkan HP Anda cukup kuat!", type: "sensor_shake", sensor: "shake", items: [{text:"🌳🍎", size:"90px"}] },
+                4: { title: "Cari benda yang tidak bisa dimakan!", hint: "Piring digunakan untuk wadah, bukan dimakan!", type: "choice", items: [{text:"🍕", correct:false}, {text:"🍔", correct:false}, {text:"🍽️", correct:true}, {text:"🍟", correct:false}] },
+                5: { title: "Miringkan HP Anda ke kanan untuk menggelindingkan bola!", hint: "Miringkan HP tajam ke arah kanan!", type: "sensor_tilt", sensor: "tilt", items: [{text:"⚽ ➡️ 🕳️", size:"70px"}] },
+                6: { title: "Berapakah hasil dari: 1 + 2 x 3 = ?", hint: "Utamakan perkalian terlebih dahulu! 2x3 = 6 + 1", type: "choice", items: [{text:"9", correct:false}, {text:"7", correct:true}, {text:"8", correct:false}] },
+                7: { title: "Mana yang paling tinggi di alam semesta?", hint: "Matahari berada paling tinggi di langit!", type: "choice", items: [{text:"🦒", correct:false}, {text:"🏢", correct:false}, {text:"☀️", correct:true}, {text:"🏔️", correct:false}] },
+                8: { title: "Temukan warna hijau dengan mencampur warna!", hint: "Campurkan Biru dan Kuning!", type: "choice", items: [{text:"🔴 + 🔵", correct:false}, {text:"🟡 + 🔵", correct:true}, {text:"⚪ + 🔴", correct:false}] },
+                9: { title: "Temukan bayi anak ayam yang baru menetas!", hint: "Ketuk telur yang sudah retak 🐣!", type: "choice", items: [{text:"🥚", correct:false}, {text:"🐣", correct:true}, {text:"🐔", correct:false}] },
+                10: { title: "Goyangkan HP Anda untuk membangunkan kucing tidur!", hint: "Goyangkan HP Anda!", type: "sensor_shake", sensor: "shake", items: [{text:"💤🐱", size:"80px"}] },
+                11: { title: "Mana hewan yang tidak bisa berenang?", hint: "Ayam tidak bisa berenang di air!", type: "choice", items: [{text:"🐟", correct:false}, {text:"🦆", correct:false}, {text:"🐔", correct:true}, {text:"🐸", correct:false}] },
+                12: { title: "Miringkan HP Anda untuk memasukkan kunci ke lubang!", hint: "Miringkan HP Anda!", type: "sensor_tilt", sensor: "tilt", items: [{text:"🔑 ➡️ 🔒", size:"70px"}] },
+                13: { title: "Berapa jam yang dibutuhkan untuk merebus 3 telur jika 1 telur butuh 5 menit?", hint: "Bisa direbus bersamaan dalam waktu 5 menit!", type: "choice", items: [{text:"15 Menit", correct:false}, {text:"5 Menit", correct:true}, {text:"10 Menit", correct:false}] },
+                14: { title: "Mana angka yang paling besar di layar?", hint: "Pilih angka 99!", type: "choice", items: [{text:"12", correct:false}, {text:"50", correct:false}, {text:"99", correct:true}, {text:"8", correct:false}] },
+                15: { title: "Goyangkan HP untuk mencampur bahan ramuan!", hint: "Goyangkan HP dengan kuat!", type: "sensor_shake", sensor: "shake", items: [{text:"🧪✨", size:"80px"}] },
+                16: { title: "Mana yang paling cepat melesat?", hint: "Roket adalah yang tercepat!", type: "choice", items: [{text:"🚗", correct:false}, {text:"🚀", correct:true}, {text:"🚲", correct:false}, {text:"🏃", correct:false}] },
+                17: { title: "Cari kendaraan yang tidak butuh bahan bakar fosil!", hint: "Sepeda dikayuh manusia!", type: "choice", items: [{text:"🚗", correct:false}, {text:"🚲", correct:true}, {text:"🚌", correct:false}] },
+                18: { title: "Miringkan HP untuk menumpahkan air di botol!", hint: "Miringkan HP ke samping!", type: "sensor_tilt", sensor: "tilt", items: [{text:"🍾 ➡️ 🌊", size:"70px"}] },
+                19: { title: "Siapakah anak dari induk sapi?", hint: "Anak sapi 🐮!", type: "choice", items: [{text:"🐥", correct:false}, {text:"🐮", correct:true}, {text:"🐷", correct:false}] },
+                20: { title: "Matikan lampu kamar untuk tidur!", hint: "Ketuk bulan/malam 🌙!", type: "choice", items: [{text:"💡", correct:false}, {text:"🌙", correct:true}, {text:"☀️", correct:false}] }
+            };
+        if (levels[levelNum]) {
+                return levels[levelNum];
+            }
+
+            const isShake = (levelNum % 4 === 0);
+            const isTilt = (levelNum % 4 === 3);
+
+            if (isShake) {
                 return {
-                    title: "Buah manakah yang paling besar secara nyata?",
-                    hint: "Pikirkan ukuran asli buah di dunia nyata!",
-                    type: "choice",
-                    sensor: null,
-                    items: [
-                        { text: "🍇", size: "60px", correct: false },
-                        { text: "🍓", size: "70px", correct: false },
-                        { text: "🍎", size: "50px", correct: false },
-                        { text: "🍉", size: "45px", correct: true }
-                    ]
-                };
-            } else if (levelNum === 2) {
-                return {
-                    title: "Goyang HP Anda untuk menjatuhkan Apel!",
-                    hint: "Goyangkan perangkat HP Anda!",
+                    title: `Level ${levelNum}: Goyangkan HP Anda untuk menyelesaikan tantangan!`,
+                    hint: "Goyangkan HP Anda dengan kuat!",
                     type: "sensor_shake",
                     sensor: "shake",
-                    items: [{ text: "🌳🍎🍎", size: "90px" }]
+                    items: [{ text: "📦💥", size: "80px" }]
                 };
-            } else if (levelNum === 3) {
+            } else if (isTilt) {
                 return {
-                    title: "Miringkan HP Anda untuk menggelindingkan bola!",
-                    hint: "Miringkan posisi HP Anda ke samping!",
+                    title: `Level ${levelNum}: Miringkan HP Anda untuk mengarahkan objek!`,
+                    hint: "Miringkan HP ke samping!",
                     type: "sensor_tilt",
                     sensor: "tilt",
-                    items: [{ text: "⚽ ➡️ 🕳️", size: "70px" }]
-                };
-            } else if (levelNum === 4) {
-                return {
-                    title: "Mana hewan yang paling tinggi?",
-                    hint: "Pilih Jerapah!",
-                    type: "choice",
-                    sensor: null,
-                    items: [
-                        { text: "🐱", size: "50px", correct: false },
-                        { text: "🦒", size: "50px", correct: true },
-                        { text: "🐶", size: "50px", correct: false }
-                    ]
-                };
-            } else if (levelNum === 5) {
-                return {
-                    title: "Temukan kunci untuk membuka peti harta!",
-                    hint: "Ketuk ikon kunci 🔑",
-                    type: "choice",
-                    sensor: null,
-                    items: [
-                        { text: "📦", size: "60px", correct: false },
-                        { text: "🔑", size: "60px", correct: true },
-                        { text: "🔒", size: "60px", correct: false }
-                    ]
+                    items: [{ text: "🎯 ➡️️ 🌀", size: "70px" }]
                 };
             } else {
-                const isSensorShake = (levelNum % 5 === 0);
-                const isSensorTilt = (levelNum % 5 === 4);
-
-                if (isSensorShake) {
-                    return {
-                        title: `Level ${levelNum}: Goyangkan HP Anda untuk memecahkan telur!`,
-                        hint: "Goyangkan perangkat HP Anda!",
-                        type: "sensor_shake",
-                        sensor: "shake",
-                        items: [{ text: "🥚", size: "80px" }]
-                    };
-                } else if (isSensorTilt) {
-                    return {
-                        title: `Level ${levelNum}: Miringkan HP Anda ke samping!`,
-                        hint: "Miringkan HP ke kiri/kanan!",
-                        type: "sensor_tilt",
-                        sensor: "tilt",
-                        items: [{ text: "🧪 ➡️ 🧫", size: "80px" }]
-                    };
-                } else {
-                    const targetIdx = (levelNum % 3) + 1;
-                    return {
-                        title: `Level ${levelNum}: Ketuk angka ke-${targetIdx}!`,
-                        hint: `Pilih kotak nomor ${targetIdx}`,
-                        type: "choice",
-                        sensor: null,
-                        items: [
-                            { text: "1️⃣", size: "52px", correct: targetIdx === 1 },
-                            { text: "2️⃣", size: "52px", correct: targetIdx === 2 },
-                            { text: "3️⃣", size: "52px", correct: targetIdx === 3 }
-                        ]
-                    };
-                }
+                const targetIdx = (levelNum % 4);
+                const options = ["⚡", "🔥", "💎", "⭐"];
+                return {
+                    title: `Level ${levelNum}: Cari simbol paling berharga (${options[targetIdx]})!`,
+                    hint: `Ketuk ikon ${options[targetIdx]}`,
+                    type: "choice",
+                    sensor: null,
+                    items: options.map((opt, idx) => ({ text: opt, correct: idx === targetIdx }))
+                };
             }
         }
-        // --- 8. CORE GAME ENGINE & LEVEL UNLOCK SYSTEM ---
+
+        /* --- GAME LOGIC --- */
         let currentLevelData = null;
         let selectedLockedLevel = null;
 
         function loadLevel(levelNum) {
+            isLevelCompleting = false;
+
             if (levelNum > MAX_LEVELS) {
                 showNotice("🎉 Tamat 50 Level!");
                 gameState.currentLevel = 50;
@@ -967,10 +987,11 @@
                 const obj = document.createElement('div');
                 obj.className = 'game-object';
                 obj.innerText = item.text;
-                obj.style.fontSize = item.size || '50px';
+                if (item.size) obj.style.fontSize = item.size;
 
                 obj.onclick = () => {
                     playSound('click');
+                    triggerVibrate(40);
                     if (currentLevelData.type === 'choice') {
                         checkAnswer(item.correct);
                     }
@@ -985,9 +1006,14 @@
         }
 
         function checkAnswer(isCorrect) {
+            if (isLevelCompleting) return;
+
             if (isCorrect) {
+                isLevelCompleting = true;
+                disableSensors();
+
                 playSound('correct');
-                triggerVibrate([80, 50, 80]);
+                triggerVibrate(150);
                 showNotice("🎉 Jawaban Benar!");
 
                 setTimeout(() => {
@@ -1009,13 +1035,14 @@
                 }, 1200);
             } else {
                 playSound('wrong');
-                triggerVibrate(200);
+                triggerVibrate(250);
                 showNotice("❌ Salah, Coba Lagi!");
             }
         }
 
         function useHint() {
             playSound('click');
+            triggerVibrate(50);
             if (gameState.coins >= 20) {
                 gameState.coins -= 20;
                 saveProgress();
@@ -1027,6 +1054,7 @@
 
         function skipLevel() {
             playSound('click');
+            triggerVibrate(50);
             if (gameState.coins >= 30) {
                 gameState.coins -= 30;
                 if (gameState.currentLevel < MAX_LEVELS) {
@@ -1045,12 +1073,13 @@
 
         function restartLevel() {
             playSound('click');
+            triggerVibrate(50);
             loadLevel(gameState.currentLevel);
         }
 
-        /* --- MODAL PILIH LEVEL & PROMPT KUNCI --- */
         function openLevelModal() {
             playSound('click');
+            triggerVibrate(50);
             const grid = document.getElementById('level-grid');
             grid.innerHTML = '';
 
@@ -1070,9 +1099,8 @@
                     btn.classList.add('locked');
                     btn.innerText = '🔒';
                     btn.onclick = () => promptUnlockLevel(i);
-                }
-
-                grid.appendChild(btn);
+        }
+        grid.appendChild(btn);
             }
 
             document.getElementById('level-modal').style.display = 'flex';
@@ -1080,6 +1108,7 @@
 
         function closeLevelModal() {
             playSound('click');
+            triggerVibrate(50);
             document.getElementById('level-modal').style.display = 'none';
         }
 
@@ -1092,6 +1121,7 @@
 
         function promptUnlockLevel(levelNum) {
             playSound('click');
+            triggerVibrate(50);
             selectedLockedLevel = levelNum;
             document.getElementById('unlock-desc-text').innerText = `Level ${levelNum} masih terkunci!`;
             document.getElementById('unlock-modal').style.display = 'flex';
@@ -1099,12 +1129,14 @@
 
         function closeUnlockModal() {
             playSound('click');
+            triggerVibrate(50);
             document.getElementById('unlock-modal').style.display = 'none';
             selectedLockedLevel = null;
         }
 
         function unlockLevelWithCoins() {
             playSound('click');
+            triggerVibrate(50);
             if (gameState.coins >= 30) {
                 gameState.coins -= 30;
                 gameState.maxUnlockedLevel = Math.max(gameState.maxUnlockedLevel, selectedLockedLevel);
@@ -1131,15 +1163,16 @@
             });
         }
 
-        /* --- MODAL PENGATURAN --- */
         function openSettingsModal() {
             playSound('click');
+            triggerVibrate(50);
             updateSettingsUI();
             document.getElementById('settings-modal').style.display = 'flex';
         }
 
         function closeSettingsModal() {
             playSound('click');
+            triggerVibrate(50);
             document.getElementById('settings-modal').style.display = 'none';
         }
 
@@ -1152,17 +1185,18 @@
             }, 1200);
         }
 
-        // --- 9. INITIALIZATION ---
+        /* --- INITIALIZATION --- */
         document.addEventListener('DOMContentLoaded', () => {
             updateCoinDisplay();
             updateSettingsUI();
 
-            if (gameState.soundEnabled) {
-                document.body.addEventListener('click', () => {
-                    initAudio();
-                    if (!bgmInterval) bgmInterval = setInterval(playBgmNote, 380);
-                }, { once: true });
-            }
+            // Memulai AudioContext pada ketukan pertama layar
+            document.body.addEventListener('click', () => {
+                initAudio();
+                if (gameState.soundEnabled && !bgmInterval) {
+                    bgmInterval = setInterval(playBgmStep, 360);
+                }
+            }, { once: true });
 
             setTimeout(() => {
                 initAdMob();
