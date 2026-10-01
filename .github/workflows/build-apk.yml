@@ -32,6 +32,21 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Inject AdMob App ID to AndroidManifest
+        run: |
+          node -e "
+          const fs = require('fs');
+          const p = 'android/app/src/main/AndroidManifest.xml';
+          if (fs.existsSync(p)) {
+            let c = fs.readFileSync(p, 'utf8');
+            const meta = '<meta-data android:name=\"com.google.android.gms.ads.APPLICATION_ID\" android:value=\"ca-app-pub-3940256099942544~3347511713\"/>';
+            if (!c.includes('com.google.android.gms.ads.APPLICATION_ID')) {
+              c = c.replace('</application>', meta + '\n</application>');
+              fs.writeFileSync(p, c);
+            }
+          }
+          "
+
       - name: Build APK via Gradle
         run: |
           cd android
