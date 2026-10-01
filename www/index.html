@@ -437,9 +437,9 @@
 
         // --- 5. GOOGLE ADMOB MONETIZATION INTEGRATION ---
         // Catatan: Menggunakan ID Test resmi Google agar aman dari Banned selama pengembangan.
-        const ADMOB_TEST_BANNER = 'ca-app-pub-3940256099942544/6300978111';
-        const ADMOB_TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
-        const ADMOB_TEST_REWARDED = 'ca-app-pub-3940256099942544/5224354917';
+        const ADMOB_TEST_BANNER = 'ca-app-pub-9305273212801233/9094905669';
+        const ADMOB_TEST_INTERSTITIAL = 'ca-app-pub-9305273212801233/1355093008';
+        const ADMOB_TEST_REWARDED = 'ca-app-pub-9305273212801233/8495216428';
 
         async function initAdMob() {
             if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AdMob) {
@@ -452,7 +452,7 @@
             try {
                 await AdMob.initialize({
                     requestTrackingAuthorization: true,
-                    initializeForTesting: true // Ganti false saat rilis produksi ke Play Store
+                    initializeForTesting: false// Ganti false saat rilis produksi ke Play Store
                 });
 
                 showBannerAd();
