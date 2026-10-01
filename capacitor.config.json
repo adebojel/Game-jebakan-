@@ -1,5 +1,10 @@
 {
-  "appId": "com.studio.jebakan",
-  "appName": "Teka Teki Jebakan",
-  "webDir": "www"
+  "appId": "com.example.gameasahotak",
+  "appName": "Game Asah Otak",
+  "webDir": "www",
+  "plugins": {
+    "AdMob": {
+      "appId": "ca-app-pub-3940256099942544~3347511713"
+    }
+  }
 }
