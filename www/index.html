@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="capacitor.js"></script>
     <meta name="google" content="notranslate">
     <title>Game Asah Otak - Full Features</title>
     <style>
@@ -377,9 +378,10 @@
             font-weight: bold; cursor: pointer;
         }
 
+        /* Responsive Grid Level */
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
             gap: 8px;
             overflow-y: auto;
             padding: 6px;
@@ -569,10 +571,10 @@
             coins: parseInt(localStorage.getItem('game_coins')) || 60,
             soundEnabled: localStorage.getItem('game_sound') !== 'false',
             vibrateEnabled: localStorage.getItem('game_vibrate') !== 'false'
-        };
+            };
 
         let isLevelCompleting = false;
-    let activeSensorType = null;
+        let activeSensorType = null;
         let lastSensorTriggerTime = 0;
 
         function saveProgress() {
@@ -609,12 +611,10 @@
         async function triggerVibrate(pattern = 100) {
             if (!gameState.vibrateEnabled) return;
             try {
-                // Utamakan Capacitor Haptics jika di APK
                 if (window.Capacitor?.Plugins?.Haptics) {
                     const duration = Array.isArray(pattern) ? pattern[0] : pattern;
                     await window.Capacitor.Plugins.Haptics.vibrate({ duration: duration || 100 });
                 } 
-                // Fallback ke navigator.vibrate standar web
                 else if ("vibrate" in navigator) {
                     navigator.vibrate(pattern);
                 }
@@ -623,12 +623,11 @@
             }
         }
 
-        /* --- SISTEM MUSIK BACKGROUND FOCUS, CALM, & MENANTANG --- */
+        /* --- SISTEM MUSIK BACKGROUND FOCUS & CALM --- */
         let audioCtx = null;
         let bgmInterval = null;
         let bgmStep = 0;
 
-        // Tangga nada ambient pentatonik misterius & fokus
         const bgmNotes = [130.81, 155.56, 174.61, 196.00, 233.08, 261.63, 311.13, 392.00];
         const chordPad = [
             [130.81, 196.00, 311.13], // Cm
@@ -647,12 +646,25 @@
             }
         }
 
+        function startBgm() {
+            if (gameState.soundEnabled && !bgmInterval) {
+                initAudio();
+                bgmInterval = setInterval(playBgmStep, 360);
+            }
+        }
+
+        function stopBgm() {
+            if (bgmInterval) {
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+            }
+        }
+
         function playBgmStep() {
             if (!gameState.soundEnabled || !audioCtx) return;
             try {
                 const now = audioCtx.currentTime;
 
-                // 1. Warm Synth Pad Chords (Menciptakan Suasana Tenang & Fokus)
                 if (bgmStep % 8 === 0) {
                     const chordIdx = Math.floor(bgmStep / 8) % chordPad.length;
                     chordPad[chordIdx].forEach(freq => {
@@ -679,7 +691,6 @@
                     });
                 }
 
-                // 2. Arpeggio Synth Note (Memberikan Kesan Menantang & Asah Otak)
                 if (Math.random() > 0.25) {
                     const noteIdx = (bgmStep * 3 + Math.floor(Math.random() * 3)) % bgmNotes.length;
                     const freq = bgmNotes[noteIdx];
@@ -753,10 +764,9 @@
             saveProgress();
             updateSettingsUI();
             if (gameState.soundEnabled) {
-                initAudio();
-                if (!bgmInterval) bgmInterval = setInterval(playBgmStep, 360);
+                startBgm();
             } else {
-                if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
+                stopBgm();
             }
         }
 
@@ -803,9 +813,9 @@
             if (isLevelCompleting) return;
             const acc = e.accelerationIncludingGravity;
             if (!acc) return;
-            const totalForce = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+            const totalForce = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
             
-            if (totalForce > 40) {
+            if (totalForce > 35) {
                 const now = Date.now();
                 if (now - lastSensorTriggerTime > 1500) {
                     lastSensorTriggerTime = now;
@@ -816,8 +826,8 @@
 
         function handleOrientation(e) {
             if (isLevelCompleting) return;
-            const gamma = e.gamma;
-            if (Math.abs(gamma) > 55) {
+            const gamma = e.gamma || 0;
+            if (Math.abs(gamma) > 45) {
                 const now = Date.now();
                 if (now - lastSensorTriggerTime > 1500) {
                     lastSensorTriggerTime = now;
@@ -825,6 +835,7 @@
                 }
             }
         }
+
         function onSensorTriggered(action) {
             if (activeSensorType === action && !isLevelCompleting) {
                 triggerVibrate(150);
@@ -878,12 +889,14 @@
             const { AdMob } = window.Capacitor.Plugins;
             try {
                 showNotice("⏳ Memuat Iklan...");
+                await AdMob.prepareRewardVideoAd({ adId: ADMOB_TEST_REWARDED });
+                
                 const rewardListener = await AdMob.addListener('onRewardVideoReward', () => {
                     if (onSuccess) onSuccess();
                     else grantAdReward();
                     rewardListener.remove();
                 });
-                await AdMob.prepareRewardVideoAd({ adId: ADMOB_TEST_REWARDED });
+                
                 await AdMob.showRewardVideoAd();
             } catch (e) {
                 showNotice("⚠️ Iklan belum siap. Coba lagi nanti!");
@@ -905,7 +918,7 @@
                 4: { title: "Cari benda yang tidak bisa dimakan!", hint: "Piring digunakan untuk wadah, bukan dimakan!", type: "choice", items: [{text:"🍕", correct:false}, {text:"🍔", correct:false}, {text:"🍽️", correct:true}, {text:"🍟", correct:false}] },
                 5: { title: "Miringkan HP Anda ke kanan untuk menggelindingkan bola!", hint: "Miringkan HP tajam ke arah kanan!", type: "sensor_tilt", sensor: "tilt", items: [{text:"⚽ ➡️ 🕳️", size:"70px"}] },
                 6: { title: "Berapakah hasil dari: 1 + 2 x 3 = ?", hint: "Utamakan perkalian terlebih dahulu! 2x3 = 6 + 1", type: "choice", items: [{text:"9", correct:false}, {text:"7", correct:true}, {text:"8", correct:false}] },
-                7: { title: "Mana yang paling tinggi di alam semesta?", hint: "Matahari berada paling tinggi di langit!", type: "choice", items: [{text:"🦒", correct:false}, {text:"🏢", correct:false}, {text:"☀️", correct:true}, {text:"🏔️", correct:false}] },
+                7: { title: "Mana yang paling tinggi di alam semesta?", hint: "Matahari berada paling tinggi di langit!", type: "choice", items: [{text:"🦒", correct:false}, {text:"🏢", correct:false}, {text:"☀️", correct:true}, {text:"🏔️️", correct:false}] },
                 8: { title: "Temukan warna hijau dengan mencampur warna!", hint: "Campurkan Biru dan Kuning!", type: "choice", items: [{text:"🔴 + 🔵", correct:false}, {text:"🟡 + 🔵", correct:true}, {text:"⚪ + 🔴", correct:false}] },
                 9: { title: "Temukan bayi anak ayam yang baru menetas!", hint: "Ketuk telur yang sudah retak 🐣!", type: "choice", items: [{text:"🥚", correct:false}, {text:"🐣", correct:true}, {text:"🐔", correct:false}] },
                 10: { title: "Goyangkan HP Anda untuk membangunkan kucing tidur!", hint: "Goyangkan HP Anda!", type: "sensor_shake", sensor: "shake", items: [{text:"💤🐱", size:"80px"}] },
@@ -920,7 +933,8 @@
                 19: { title: "Siapakah anak dari induk sapi?", hint: "Anak sapi 🐮!", type: "choice", items: [{text:"🐥", correct:false}, {text:"🐮", correct:true}, {text:"🐷", correct:false}] },
                 20: { title: "Matikan lampu kamar untuk tidur!", hint: "Ketuk bulan/malam 🌙!", type: "choice", items: [{text:"💡", correct:false}, {text:"🌙", correct:true}, {text:"☀️", correct:false}] }
             };
-        if (levels[levelNum]) {
+
+            if (levels[levelNum]) {
                 return levels[levelNum];
             }
 
@@ -941,7 +955,7 @@
                     hint: "Miringkan HP ke samping!",
                     type: "sensor_tilt",
                     sensor: "tilt",
-                    items: [{ text: "🎯 ➡️️ 🌀", size: "70px" }]
+                    items: [{ text: "🎯 ➡ 🌀", size: "70px" }]
                 };
             } else {
                 const targetIdx = (levelNum % 4);
@@ -1098,8 +1112,8 @@
                     btn.classList.add('locked');
                     btn.innerText = '🔒';
                     btn.onclick = () => promptUnlockLevel(i);
-        }
-        grid.appendChild(btn);
+                }
+                grid.appendChild(btn);
             }
 
             document.getElementById('level-modal').style.display = 'flex';
@@ -1148,20 +1162,7 @@
             } else {
                 showNotice("Koin tidak cukup (butuh 30 🪙)!");
             }
-        }
-
-        function unlockLevelWithAd() {
-            watchRewardedAd(() => {
-                gameState.maxUnlockedLevel = Math.max(gameState.maxUnlockedLevel, selectedLockedLevel);
-                gameState.currentLevel = selectedLockedLevel;
-                saveProgress();
-                closeUnlockModal();
-                closeLevelModal();
-                showNotice(`🔓 Level ${selectedLockedLevel} Terbuka!`);
-                startCurrentLevel();
-            });
-        }
-
+                                                                                                                                             }
         function openSettingsModal() {
             playSound('click');
             triggerVibrate(50);
@@ -1189,12 +1190,8 @@
             updateCoinDisplay();
             updateSettingsUI();
 
-            // Memulai AudioContext pada ketukan pertama layar
             document.body.addEventListener('click', () => {
-                initAudio();
-                if (gameState.soundEnabled && !bgmInterval) {
-                    bgmInterval = setInterval(playBgmStep, 360);
-                }
+                startBgm();
             }, { once: true });
 
             setTimeout(() => {
