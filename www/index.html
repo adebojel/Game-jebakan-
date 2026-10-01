@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>Mega Fusion Brain Out (Sensor Edition)</title>
+    <title>Game Asah Otak</title>
     <style>
         * {
             box-sizing: border-box;
@@ -27,6 +27,7 @@
             overflow: hidden;
         }
 
+        /* Card Utama Game */
         .game-card {
             background: #ffffff;
             width: 100%;
@@ -34,7 +35,7 @@
             height: 92vh;
             max-height: 760px;
             border-radius: 32px;
-            padding: 18px;
+            padding: 16px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
@@ -43,28 +44,53 @@
             border: 4px solid #4834d4;
         }
 
+        /* Header Bar */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #f0f3f8;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 20px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
-        .coin-badge {
-            background: linear-gradient(180deg, #f1c40f, #f39c12);
-            padding: 6px 14px;
-            border-radius: 50px;
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 14px;
+        .coin-container {
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .coin-badge {
+            background: linear-gradient(180deg, #f1c40f, #f39c12);
+            padding: 6px 12px;
+            border-radius: 50px;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            box-shadow: 0 4px 0 #d35400, 0 5px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 0 #d35400, 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-ad-free {
+            background: linear-gradient(180deg, #2ecc71, #27ae60);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 50px;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #1e8449;
+            transition: transform 0.1s;
+        }
+
+        .btn-ad-free:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #1e8449;
         }
 
         .level-info {
@@ -72,17 +98,17 @@
         }
 
         .level-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 900;
             color: #2c3e50;
             letter-spacing: 0.5px;
         }
 
         .level-tag {
-            font-size: 10px;
+            font-size: 9px;
             background: #eb4d4b;
             color: #ffffff;
-            padding: 2px 10px;
+            padding: 2px 8px;
             border-radius: 12px;
             font-weight: 800;
             display: inline-block;
@@ -93,50 +119,51 @@
 
         .action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .icon-btn {
             background: linear-gradient(180deg, #00d2d3, #01a3a4);
             border: none;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 4px 0 #006266, 0 4px 8px rgba(0,0,0,0.2);
-            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 3px 0 #006266, 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
         }
 
         .icon-btn:active {
-            transform: translateY(3px);
+            transform: translateY(2px);
             box-shadow: 0 1px 0 #006266;
         }
 
+        /* Arena Teka-Teki */
         .puzzle-card {
             background: linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%);
             flex: 1;
             border-radius: 24px;
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            margin: 14px 0;
+            margin: 12px 0;
             border: 2px dashed #cbd5e1;
             overflow: hidden;
         }
 
         .puzzle-title {
             color: #1e293b;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 800;
             text-align: center;
-            margin-bottom: 12px;
-            min-height: 48px;
+            margin-bottom: 10px;
+            min-height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -159,7 +186,7 @@
         }
 
         .game-object {
-            font-size: 58px;
+            font-size: 54px;
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
@@ -172,13 +199,8 @@
             border: 2px solid #f1f5f9;
         }
 
-        .game-object.falling {
-            animation: fallAnimation 0.6s forwards ease-in;
-        }
-
-        @keyframes fallAnimation {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(180px) rotate(45deg); opacity: 0; }
+        .game-object:active {
+            transform: scale(1.2);
         }
 
         .sensor-badge {
@@ -195,50 +217,62 @@
             gap: 4px;
         }
 
+        /* Control Bottom Bar */
         .bottom-bar {
             display: flex;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn-bottom {
             flex: 1;
-            padding: 14px 10px;
+            padding: 12px 8px;
             border: none;
-            border-radius: 18px;
+            border-radius: 16px;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: #ffffff;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s;
         }
 
         .btn-hint {
             background: linear-gradient(180deg, #10ac84, #1dd1a1);
-            box-shadow: 0 5px 0 #10ac84, 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 0 #10ac84, 0 5px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-hint:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #10ac84;
         }
 
         .btn-skip {
             background: linear-gradient(180deg, #ff9f43, #ee5253);
-            box-shadow: 0 5px 0 #b14343, 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 0 #b14343, 0 5px 10px rgba(0,0,0,0.15);
         }
 
+        .btn-skip:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b14343;
+        }
+
+        /* Notifikasi Overlay */
         .overlay-msg {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.92);
+            background: rgba(15, 23, 42, 0.94);
             color: #ffffff;
-            padding: 16px 28px;
+            padding: 16px 24px;
             border-radius: 20px;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             display: none;
             z-index: 100;
             text-align: center;
@@ -250,14 +284,17 @@
 <body>
 
     <div class="game-card">
-        <!-- Header -->
+        <!-- Top Bar -->
         <div class="top-bar">
-            <div class="coin-badge">
-                <span>🟡</span> <span id="coin-count">60</span>
+            <div class="coin-container">
+                <div class="coin-badge">
+                    <span>🟡</span> <span id="coin-count">60</span>
+                </div>
+                <button class="btn-ad-free" onclick="watchRewardedAd()">🎥 +20</button>
             </div>
             <div class="level-info">
                 <div class="level-title" id="level-title-text">LEVEL 1</div>
-                <div class="level-tag">BRAIN TEASER</div>
+                <div class="level-tag">ASAH OTAK</div>
             </div>
             <div class="action-buttons">
                 <button class="icon-btn" onclick="restartLevel()">🔄</button>
@@ -275,17 +312,17 @@
             <div class="overlay-msg" id="overlay-msg"></div>
         </div>
 
-        <!-- Controls -->
+        <!-- Bottom Bar -->
         <div class="bottom-bar">
             <button class="btn-bottom btn-hint" onclick="useHint()">💡 Petunjuk (20 🪙)</button>
-            <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭️ Lewati (30 🪙)</button>
+            <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭️️ Lewati (30 🪙)</button>
         </div>
     </div>
 
     <script>
-        // --- 1. DETEKTOR ERROR KODING ---
+        // --- 1. DETEKTOR ERROR (UNTUK WEBVIEW ANDROID TIPE LAMA) ---
         window.onerror = function(msg, url, lineNo) {
-            alert("🔴 Error Kodingan:\n" + msg + "\nBaris: " + lineNo);
+            alert("🔴 Info Kendala:\n" + msg + "\nBaris: " + lineNo);
             return false;
         };
 
@@ -295,7 +332,7 @@
             coins: parseInt(localStorage.getItem('game_coins')) || 60
         };
 
-        // --- 3. AUDIO ENGINE & VIBRATION ---
+        // --- 3. AUDIO SYNTHESIZER & VIBRATION ---
         let audioCtx = null;
         function initAudio() {
             if (!audioCtx) {
@@ -347,12 +384,12 @@
             playSound('click');
         }
 
-        // --- 4. SENSOR HARDWARE ENGINE (ACCELEROMETER / GYROSCOPE) ---
+        // --- 4. HARDWARE SENSOR ENGINE (ACCELEROMETER & GYROSCOPE) ---
         let activeSensorType = null;
         let lastShakeTime = 0;
 
         function enableSensors(sensorType) {
-            disableSensors(); // Reset listener sebelumnya
+            disableSensors();
             activeSensorType = sensorType;
             document.getElementById('sensor-badge').style.display = 'flex';
 
@@ -370,13 +407,12 @@
             document.getElementById('sensor-badge').style.display = 'none';
         }
 
-        // Deteksi Goyang (Shake)
         function handleMotion(e) {
             const acc = e.accelerationIncludingGravity;
             if (!acc) return;
             const totalForce = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
             
-            if (totalForce > 24) { // Threshold Goyangan HP
+            if (totalForce > 24) {
                 const now = Date.now();
                 if (now - lastShakeTime > 800) {
                     lastShakeTime = now;
@@ -385,10 +421,9 @@
             }
         }
 
-        // Deteksi Miring (Tilt)
         function handleOrientation(e) {
-            const gamma = e.gamma; // Kemiringan Kiri/Kanan (-90 ke 90)
-            if (Math.abs(gamma) > 35) { // HP Dimiringkan > 35 Derajat
+            const gamma = e.gamma;
+            if (Math.abs(gamma) > 35) {
                 onSensorTriggered('tilt');
             }
         }
@@ -400,7 +435,93 @@
             }
         }
 
-        // --- 5. DATA 500 LEVEL (TERMASUK LEVEL SENSOR) ---
+        // --- 5. GOOGLE ADMOB MONETIZATION INTEGRATION ---
+        // Catatan: Menggunakan ID Test resmi Google agar aman dari Banned selama pengembangan.
+        const ADMOB_TEST_BANNER = 'ca-app-pub-3940256099942544/6300978111';
+        const ADMOB_TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
+        const ADMOB_TEST_REWARDED = 'ca-app-pub-3940256099942544/5224354917';
+
+        async function initAdMob() {
+            if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AdMob) {
+                console.log("AdMob: Berjalan di Browser/Preview Mode (Plugin AdMob belum aktif).");
+                return;
+            }
+
+            const { AdMob } = window.Capacitor.Plugins;
+
+            try {
+                await AdMob.initialize({
+                    requestTrackingAuthorization: true,
+                    initializeForTesting: true // Ganti false saat rilis produksi ke Play Store
+                });
+
+                showBannerAd();
+            } catch (err) {
+                console.log("AdMob Init Exception:", err);
+            }
+        }
+
+        async function showBannerAd() {
+            if (!window.Capacitor?.Plugins?.AdMob) return;
+            const { AdMob } = window.Capacitor.Plugins;
+
+            try {
+                await AdMob.showBanner({
+                    adId: ADMOB_TEST_BANNER,
+                    adSize: 'BANNER',
+                    position: 'BOTTOM_CENTER',
+                    margin: 0
+                });
+            } catch (e) {
+                console.log("Gagal menampilkan Banner Ad:", e);
+            }
+        }
+
+        async function showInterstitialAd() {
+            if (!window.Capacitor?.Plugins?.AdMob) return;
+            const { AdMob } = window.Capacitor.Plugins;
+
+            try {
+                await AdMob.prepareInterstitial({ adId: ADMOB_TEST_INTERSTITIAL });
+                await AdMob.showInterstitial();
+            } catch (e) {
+                console.log("Gagal menampilkan Interstitial Ad:", e);
+            }
+        }
+
+        async function watchRewardedAd() {
+            playSound('click');
+            
+            // Fallback simulasi jika diuji di browser laptop/preview
+            if (!window.Capacitor?.Plugins?.AdMob) {
+                if (confirm("[MODE TEST BROWSER] Tonton iklan simulasi untuk +20 Koin Gratis?")) {
+                    gameState.coins += 20;
+                    saveProgress();
+                    document.getElementById('coin-count').innerText = gameState.coins;
+                    showNotice("🎉 +20 Koin Gratis Diperoleh!");
+                }
+                return;
+            }
+
+            const { AdMob } = window.Capacitor.Plugins;
+
+            try {
+                const rewardListener = await AdMob.addListener('onRewardVideoReward', (reward) => {
+                    gameState.coins += 20;
+                    saveProgress();
+                    document.getElementById('coin-count').innerText = gameState.coins;
+                    showNotice("🎉 +20 Koin Gratis Diperoleh!");
+                    rewardListener.remove();
+                });
+
+                await AdMob.prepareRewardVideoAd({ adId: ADMOB_TEST_REWARDED });
+                await AdMob.showRewardVideoAd();
+            } catch (e) {
+                alert("Iklan video belum tersedia. Pastikan koneksi internet Anda aktif!");
+            }
+        }
+
+        // --- 6. DATA 500 LEVEL GENERATOR SYSTEM ---
         function getLevelData(levelNum) {
             if (levelNum === 1) {
                 return {
@@ -416,10 +537,9 @@
                     ]
                 };
             } else if (levelNum === 2) {
-                // LEVEL SENSOR GOYANG HP
                 return {
                     title: "Goyang HP Anda untuk menjatuhkan Apel dari pohon!",
-                    hint: "Goyangkan HP Moto G67 Anda agak kuat!",
+                    hint: "Goyangkan perangkat HP Anda!",
                     type: "sensor_shake",
                     sensor: "shake",
                     items: [
@@ -427,7 +547,6 @@
                     ]
                 };
             } else if (levelNum === 3) {
-                // LEVEL SENSOR MIRINGKAN HP
                 return {
                     title: "Miringkan HP Anda ke samping untuk menggelindingkan bola!",
                     hint: "Miringkan posisi HP Anda ke arah kanan!",
@@ -438,15 +557,14 @@
                     ]
                 };
             } else {
-                // GENERATOR UTAMA HINGGA 500 LEVEL
                 const isSensorLevel = (levelNum % 4 === 0);
                 if (isSensorLevel) {
                     return {
-                        title: `Level ${levelNum}: Goyang HP Anda untuk menyelesaikan tantangan ini!`,
-                        hint: "Goyangkan perangkat HP Anda!",
+                        title: `Level ${levelNum}: Goyangkan HP Anda untuk membuka kotak misteri!`,
+                        hint: "Goyangkan perangkat HP Anda agak kuat!",
                         type: "sensor_shake",
                         sensor: "shake",
-                        items: [{ text: "📦", size: "80px" }]
+                        items: [{ text: "🎁", size: "80px" }]
                     };
                 } else {
                     const target = (levelNum % 3) + 1;
@@ -458,117 +576,4 @@
                         items: [
                             { text: "1️⃣", size: "52px", correct: target === 1 },
                             { text: "2️⃣", size: "52px", correct: target === 2 },
-                            { text: "3️⃣", size: "52px", correct: target === 3 }
-                        ]
-                    };
-                }
-            }
-        }
-
-        // --- 6. RENDERER ENGINE ---
-        function loadLevel(levelNum) {
-            disableSensors(); // Matikan sensor level sebelumnya
-            const data = getLevelData(levelNum);
-            
-            document.getElementById('level-title-text').innerText = "LEVEL " + levelNum;
-            document.getElementById('coin-count').innerText = gameState.coins;
-            document.getElementById('puzzle-instruction').innerText = data.title;
-            
-            const canvas = document.getElementById('puzzle-canvas');
-            canvas.innerHTML = '';
-
-            // Aktifkan Sensor jika Level Membutuhkannya
-            if (data.sensor) {
-                enableSensors(data.sensor);
-            }
-
-            if (data.type === 'choice') {
-                data.items.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = 'game-object';
-                    el.innerText = item.text;
-                    el.style.fontSize = item.size || '52px';
-                    el.onclick = function() {
-                        checkAnswer(item.correct);
-                    };
-                    canvas.appendChild(el);
-                });
-            } else if (data.type.startsWith('sensor')) {
-                data.items.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = 'game-object';
-                    el.id = item.id || 'sensor-obj';
-                    el.innerText = item.text;
-                    el.style.fontSize = item.size || '70px';
-                    canvas.appendChild(el);
-                });
-            }
-        }
-
-        function checkAnswer(isCorrect) {
-            playSound('click');
-            if (isCorrect) {
-                disableSensors();
-                triggerVibrate([80, 50, 100]);
-                playSound('correct');
-                showNotice("🎉 HEBAT! BENAR!");
-                setTimeout(() => {
-                    gameState.currentLevel++;
-                    gameState.coins += 5;
-                    saveProgress();
-                    loadLevel(gameState.currentLevel);
-                }, 900);
-            } else {
-                triggerVibrate(200);
-                playSound('wrong');
-                showNotice("❌ SALAH! Coba lagi.");
-            }
-        }
-
-        function showNotice(msg) {
-            const overlay = document.getElementById('overlay-msg');
-            overlay.innerText = msg;
-            overlay.style.display = 'block';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 1100);
-        }
-
-        // --- 7. KONTROL APLIKASI ---
-        function useHint() {
-            playSound('click');
-            if (gameState.coins >= 20) {
-                gameState.coins -= 20;
-                saveProgress();
-                document.getElementById('coin-count').innerText = gameState.coins;
-                const data = getLevelData(gameState.currentLevel);
-                alert("💡 Petunjuk: " + data.hint);
-            } else {
-                alert("Koin Anda tidak cukup!");
-            }
-        }
-
-        function skipLevel() {
-            playSound('click');
-            if (gameState.coins >= 30) {
-                gameState.coins -= 30;
-                gameState.currentLevel++;
-                saveProgress();
-                loadLevel(gameState.currentLevel);
-            } else {
-                alert("Koin Anda tidak cukup!");
-            }
-        }
-
-        function restartLevel() {
-            playSound('click');
-            loadLevel(gameState.currentLevel);
-        }
-
-        function saveProgress() {
-            localStorage.setItem('game_level', gameState.currentLevel);
-            localStorage.setItem('game_coins', gameState.coins);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            
+                            { text: "3️⃣", size: "52px", correct: ta
