@@ -315,14 +315,14 @@
         <!-- Bottom Bar -->
         <div class="bottom-bar">
             <button class="btn-bottom btn-hint" onclick="useHint()">💡 Petunjuk (20 🪙)</button>
-            <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭️️ Lewati (30 🪙)</button>
+            <button class="btn-bottom btn-skip" onclick="skipLevel()">⏭ Lewati (30 🪙)</button>
         </div>
     </div>
 
     <script>
-        // --- 1. DETEKTOR ERROR (UNTUK WEBVIEW ANDROID TIPE LAMA) ---
+        // --- 1. DETEKTOR ERROR ---
         window.onerror = function(msg, url, lineNo) {
-            alert("🔴 Info Kendala:\n" + msg + "\nBaris: " + lineNo);
+            console.error("🔴 Info Kendala: " + msg + " (Baris: " + lineNo + ")");
             return false;
         };
 
@@ -331,6 +331,11 @@
             currentLevel: parseInt(localStorage.getItem('game_level')) || 1,
             coins: parseInt(localStorage.getItem('game_coins')) || 60
         };
+
+        function saveProgress() {
+            localStorage.setItem('game_level', gameState.currentLevel);
+            localStorage.setItem('game_coins', gameState.coins);
+        }
 
         // --- 3. AUDIO SYNTHESIZER & VIBRATION ---
         let audioCtx = null;
@@ -384,7 +389,7 @@
             playSound('click');
         }
 
-        // --- 4. HARDWARE SENSOR ENGINE (ACCELEROMETER & GYROSCOPE) ---
+        // --- 4. HARDWARE SENSOR ENGINE ---
         let activeSensorType = null;
         let lastShakeTime = 0;
 
@@ -436,14 +441,13 @@
         }
 
         // --- 5. GOOGLE ADMOB MONETIZATION INTEGRATION ---
-        // Catatan: Menggunakan ID Test resmi Google agar aman dari Banned selama pengembangan.
         const ADMOB_TEST_BANNER = 'ca-app-pub-9305273212801233/9094905669';
         const ADMOB_TEST_INTERSTITIAL = 'ca-app-pub-9305273212801233/1355093008';
         const ADMOB_TEST_REWARDED = 'ca-app-pub-9305273212801233/8495216428';
 
         async function initAdMob() {
             if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AdMob) {
-                console.log("AdMob: Berjalan di Browser/Preview Mode (Plugin AdMob belum aktif).");
+                console.log("AdMob: Berjalan di Browser/Preview Mode.");
                 return;
             }
 
@@ -452,7 +456,7 @@
             try {
                 await AdMob.initialize({
                     requestTrackingAuthorization: true,
-                    initializeForTesting: false// Ganti false saat rilis produksi ke Play Store
+                    initializeForTesting: false
                 });
 
                 showBannerAd();
@@ -492,7 +496,6 @@
         async function watchRewardedAd() {
             playSound('click');
             
-            // Fallback simulasi jika diuji di browser laptop/preview
             if (!window.Capacitor?.Plugins?.AdMob) {
                 if (confirm("[MODE TEST BROWSER] Tonton iklan simulasi untuk +20 Koin Gratis?")) {
                     gameState.coins += 20;
@@ -576,4 +579,11 @@
                         items: [
                             { text: "1️⃣", size: "52px", correct: target === 1 },
                             { text: "2️⃣", size: "52px", correct: target === 2 },
-                            { text: "3️⃣", size: "52px", correct: ta
+                            { text: "3️⃣", size: "52px", correct: target === 3 }
+                        ]
+                    };
+                }
+            }
+        }
+
+     
